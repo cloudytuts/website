@@ -1,0 +1,45 @@
+baseURL = "https://www.cloudytuts.com/"
+languageCode = "en-us"
+title = "CloudyTuts"
+
+defaultContentLanguage = "en"
+enableRobotsTXT = true
+disableBrowserError = true
+
+contentDir = "content/en"
+
+staticDir = "assets"
+
+timeout = 3000
+
+enableGitInfo = true
+
+[frontmatter]
+date = ["date", ":filename", "publishDate", "lastmod"]
+
+# Be explicit about the output formats. We (currently) only want an RSS feed for the home page.
+[outputs]
+#home = [ "HTML", "RSS", "HEADERS" ]
+home = [ "HTML", "RSS" ]
+page = [ "HTML"]
+section = [ "HTML"]
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+  [markup.highlight]
+    codeFences = true
+    guessSyntax = false
+    hl_Lines = ""
+    lineNoStart = 1
+    lineNos = false
+    lineNumbersInTable = true
+    noClasses = true
+    style = "monokai"
+    tabWidth = 4
+
+githubbranch = "master"
+docsbranch = "master"
+githubWebsiteRepo = "github.com/serainville/cloudytuts.com"
+githubWebsiteRaw = "raw.githubusercontent.com/serainville/cloudytuts.com"

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html id="{{ .Params.cid }}" lang="{{ .Language }}" class="{{ .Params.class }}">
+	<head>
+		{{ partial "head.html" . }}
+	</head>
+	<body class="page">
+		{{ partial "header.html" . }}
+		{{ block "hero" . }}
+		<!--  HERO  -->
+		<section id="hero" class="light-text">
+			<div class="main-section">
+				<div id="headlineWrapper">
+					<h1>{{ block "hero-title" . }}{{ .Params.bigheader | default .Title }}{{ end }}</h1>
+					<h5>{{ .Params.abstract }}</h5>
+				</div>
+				{{ block "hero-more" . }}{{ end }}
+			</div>
+		</section>
+		{{ block "post-hero" . }}{{ end }}
+		{{ end }}
+	
+	<main>
+		<article class="page-content">
+		  {{ block "main" . }}{{ end }}
+		</article>
+	</main>
+
+		{{ partialCached "footer.html" . }}
+		{{ partialCached "footer-scripts.html" . }}
+	</body>
+</html>
