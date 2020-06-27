@@ -2,13 +2,15 @@ baseURL = "https://www.cloudytuts.com/"
 languageCode = "en-us"
 title = "CloudyTuts"
 
+theme = "cloudytuts"
+
 defaultContentLanguage = "en"
 enableRobotsTXT = true
 disableBrowserError = true
 
 contentDir = "content/en"
 
-staticDir = "assets"
+staticDir = "static"
 
 timeout = 3000
 

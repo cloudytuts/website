@@ -1,0 +1,3 @@
+[submodule "themes/cloudytuts"]
+	path = themes/cloudytuts
+	url = https://github.com/serainville/cloudytuts-hugo-theme.git
