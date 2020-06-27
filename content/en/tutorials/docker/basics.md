@@ -5,7 +5,7 @@ categories: ["devops", "containers"]
 tags: ["docker"]
 ---
 
-Learning the basics of Docker is foundamental to using it in your environment.
+Learning the basics of Docker is foundamental to using it in your environment. This tutorial will focus on the basic knowledge required to run Docker.
 
 # Running Your First Container
 
