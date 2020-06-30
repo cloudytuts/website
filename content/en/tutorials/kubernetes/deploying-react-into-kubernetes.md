@@ -3,15 +3,16 @@ layout: tutorial
 title: Deploying React to Kubernetes
 series: Up And Running on Kubernetes
 categories: devops
+weight: 10
 tags: nodejs kubernetes nginx docker
-keywords: nodejs kubernetes nginx docker
 date: "2012-04-06"
+description: Learn how to containerize your React applications and deploy them into Kubernetes.
 abstract: |
-    Learn how to containerize your React applications and deploy them into Kubernetes.
-example_repo: https://github.com/serainville/kubernetes-deployment-examples 
-video: https://youtube.com/4rfsfaffasfsfasf
-author: srainville
-contributor: jdoe bgates
+    Learn how to containerize your React applications and deploy them into Kubernetes.|
+author: serainville
+contributors:
+    - "Bob Martin"
+    - bgates
 ---
 
 Containerization has seen exponential growth in popular since the advent of Docker. However, it wasn't long before people identified the challenges with orchestrating a containerized environment. While a number of solutions were developed, Kubernetes became king.
@@ -20,12 +21,12 @@ In this tutorial you will learn how to weld Kubernetes to run your React-based w
 
 Resources have been provided to aid you in following along with this tutorial. The resources as a repository in Github.
 
-# Containerize your React App
+## Containerize your React App
 Once transpiled, a React app will consist of at least two static files: an HTML file and a JavaScript file. Kubernetes is not capable of serving static files, as it is a container orchestrator. In order to server static files you must generate a container image capable of hosting your static files.
 
 Nginx is very popular for serving static files. 
 
-# Building Your Image
+## Building Your Image
 As with all NPM based projects, your project will need to be transpiled prior to be being deployed. When preparing your final container image us multistage Docker builds. 
 
 The following Dockerfile example shows two stages. (1) the build stage transpiles (compiles) the source files and outputs your final static JavaScript file, (2) the final stage copies your newly generated static files to an Nginx-based image. 
@@ -40,14 +41,19 @@ COPY --from=build ./output/index.html /var/www/html
 COPY --from=build ./output/myapp.js /var/www/html
 ```
 
+{{< warning >}}
+The example code snippet above does not define a `USER` action, when means the container will run with root privileges, therefore, it is an insecure image. [Setting a user]({{< relref path="tutorials/docker/basics.md">}})
+{{< /warning >}}
+
 By using multistage builds we eliminate the need for placing our source files in the final image, which in most scenerios would be a security concern. Two stages are used in our build, and by doing so we separate our areas of concern. Our first stage compiles the project's static files, and the second stage generates the final image.
 
 To build the project
 
+```shell
   docker build -t my.docker.repo/myapp:v0.1.0 .
+```
 
-
-# Kubernetes Deployment Manifest
+## Kubernetes Deployment Manifest
 A Kubernetes deployment defines how an application will be deployed. Like all things Kubernetes, a manifest is typically a YAML file. 
 
 ```yaml
@@ -77,18 +83,26 @@ spec:
             - containerPort: 80
 ```
 
-## Metadata
+### Metadata
 Metadata is an important part of grouping common resources in Kubernetes. At minimum a deployment requires a `name` key, however, in larger, more complex Kubernetes environments you will need to expand your usage of metadata. 
+
+{{< warning >}}
+Do not **attempt** to publish to production without adjusting the user.
+{{< /warning >}}
+
+{{< note >}}
+Powering down the receptor is a good practice.
+{{< /note >}}
 
 Your success in implementing blue-green, canary, or other deployment strategies will depend on your ability separate and group common resources. 
 
-{{< note "Canary Deployments" >}}
+{{< casestudy "Canary Deployments" >}}
 With canary deployments its common for multiple versions of your applications to be deployed. Each version deploy could expose itself via the same service and, therefore, load balancer. By applying an appropriate metadata scheme it becomes easier to execution against a specific version of your application. 
-{{< /note >}}
+{{< /casestudy >}}
 
 The example deployment YAML file consists of four common labels.
 
-| Key | Description |
+| Metadata Label | Description |
 | --- | --- |
 | `kubernetes.io/name` | Useful for naming the component of your application. |
 | `kubernetes.io/instance ` | is usefully for identifying the instance of your application, such as a specific environmental release. |
@@ -96,15 +110,15 @@ The example deployment YAML file consists of four common labels.
 | `kubernetes.io/version` | is self explanatory.  |
 
 
-## Deployment Spec
+### Deployment Spec
 
 The spec defines what container to deploy and how it will be deployed. It is here where you set the image to be deployed and whether there are replicas, for example. 
 
 
 
-# Exposing React in Kubernetes
+## Exposing React in Kubernetes
 
-# ConfigMaps
+## ConfigMaps
 Application configurations can differ from one environment to another. If all configurations were to be hard-coded into your application you would lose the ability of being portable; a single image of your application could not be deployed into any environment as environment specific images would be required. 
 
 Kubernetes provides ConfigMaps, which is a key-value pair manifest for storing your applications configurations. 
@@ -164,7 +178,7 @@ spec:
             key: ui_properties_file_name
 ```     
             
-# Secrets
+## Secrets
 Protecting sensitive information is crucial to an application's security. Kubernetes provides Secrets as a means to store sensitive information in the cluster. The data is encrypted at rest as a base64 encoded string.
 
 Kubernetes does not provide secrets lifecycle management, meaning out of the box you will be responsible for rotating secrets and ensuring pods have the updated information.
@@ -176,10 +190,10 @@ apiVersion: v1
 kind: Secret
 ```
 
-# Helm
+## Helm
 H
 
-# Further Reading
+## Further Reading
 
 The following key subject areas were included in this tutorial. 
 

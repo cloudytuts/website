@@ -17,20 +17,20 @@
     {{ with .OutputFormats.Get "RSS" }}
 	{{ printf "<atom:link href=%q rel=\"self\" type=%q />" .Permalink .MediaType | safeHTML }}
     {{ end }}
-    {{ range first 50 (where site.RegularPages "Type" "in" (slice "blog")) }}
+    {{ range first 50 (where (where .Site.Pages ".Section" "tutorials") "Kind" "page" ) }}
+
     <item>
-      <title>{{ .Section | title }}: {{ .Title }}</title>
+      {{ if eq .Section "tutorials"}}
+      <title>{{ .CurrentSection.Title}} {{ .Section }}: {{ .Title }}</title>
+      {{ else }}
+      <title>{{ .Section | .Title }} {{ .Title }}</title>
+      {{ end }}
       <link>{{ .Permalink }}</link>
       <pubDate>{{ .Date.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</pubDate>
       {{ with site.Author.email }}<author>{{.}}{{ with site.Author.name }} ({{.}}){{end}}</author>{{end}}
       <guid>{{ .Permalink }}</guid>
       <description>
-        {{ $img := (.Resources.ByType "image").GetMatch "*featured*" }}
-        {{ with $img }}
-        {{ $img := .Resize "640x" }}
-        {{ printf "<![CDATA[<img src=\"%s\" width=\"%d\" height=\"%d\"/>]]>" $img.Permalink $img.Width $img.Height | safeHTML }}
-        {{ end }}
-        {{ .Content | html }}
+        {{ .Description }}
       </description>
     </item>
     {{ end }}

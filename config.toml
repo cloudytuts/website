@@ -16,6 +16,9 @@ timeout = 3000
 
 enableGitInfo = true
 
+[permalinks]
+tutorials = "/:sections/:title"
+
 [frontmatter]
 date = ["date", ":filename", "publishDate", "lastmod"]
 

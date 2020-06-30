@@ -1,6 +1,7 @@
 ---
 title: "Basics"
 weight: 11
+date: "2020-04-02"
 categories: ["devops", "containers"]
 tags: ["docker"]
 ---
