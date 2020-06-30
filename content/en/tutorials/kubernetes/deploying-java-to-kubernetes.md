@@ -1,6 +1,6 @@
 ---
 layout: tutorial
-title: Deploying React to Kubernetes
+title: Deploying Java to Kubernetes
 series: Up And Running on Kubernetes
 categories: devops
 weight: 10
@@ -20,6 +20,15 @@ Containerization has seen exponential growth in popular since the advent of Dock
 In this tutorial you will learn how to weld Kubernetes to run your React-based web applications.
 
 Resources have been provided to aid you in following along with this tutorial. The resources as a repository in Github.
+
+## Getting Started
+### Prerequisites
+* Basic YAML familiarity, as covered in [Getting Started with YAML](). YAML text formatting, as covered in [YAML text foundamentals](). How hyperlinks work, as covered in [Creating hyperlinks]().
+* Basic Docker familiarity, as coved in [Docker Basics]({{< relref path="../docker/basics.md" >}})
+
+### Objective
+Learn how to structure your document using semantic tags, and how to work out the structure of a simple website.
+
 
 ## Containerize your React App
 Once transpiled, a React app will consist of at least two static files: an HTML file and a JavaScript file. Kubernetes is not capable of serving static files, as it is a container orchestrator. In order to server static files you must generate a container image capable of hosting your static files.

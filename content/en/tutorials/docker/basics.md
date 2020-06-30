@@ -1,14 +1,14 @@
 ---
 title: "Basics"
-weight: 11
-date: "2020-04-02"
+weight: 49
+date: "2020-04"
 categories: ["devops", "containers"]
 tags: ["docker"]
 ---
 
 Learning the basics of Docker is foundamental to using it in your environment. This tutorial will focus on the basic knowledge required to run Docker.
 
-# Running Your First Container
+## Running Your First Container
 
 Let's begin by running a simple `hello-world` container. It's a very basic container available from Dockerhub, the default image repository for Docker, that simply outputs a string of texts saying "hello, world!".
 
@@ -32,7 +32,7 @@ docker ps
 Notice how it outputs an empty list. In order to view previously executed container you will need to use the `docker ps -a` command.
 
 
-# Checking Running Containers
+## Checking Running Containers
 
 
 

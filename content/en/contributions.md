@@ -34,7 +34,7 @@ If you're fixing an issue in the existing documentation, you should submit a PR 
 For more information about contributing to the Kubernetes documentation, see:
 
 * [Contribute to Kubernetes docs]({{< relref path="blog/_index.md" >}})
-* [Page Content Types]({{< relref path="tutorials/_index.html" >}})
+* [Page Content Types]({{< relref path="tutorials/_index.md" >}})
 * [Documentation Style Guide]({{< relref path="tutorials/docker/building-images.md" >}})
 * [Localizing Kubernetes Documentation]({{< relref path="tutorials/docker/basics.md" >}})
 

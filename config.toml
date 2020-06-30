@@ -18,6 +18,7 @@ enableGitInfo = true
 
 [permalinks]
 tutorials = "/:sections/:title"
+blog = "/:year/:month/:day/:title"
 
 [frontmatter]
 date = ["date", ":filename", "publishDate", "lastmod"]
@@ -28,6 +29,34 @@ date = ["date", ":filename", "publishDate", "lastmod"]
 home = [ "HTML", "RSS" ]
 page = [ "HTML"]
 section = [ "HTML"]
+
+[taxonomies]
+  category = "categories"
+  tag = "tags"
+  series = "series"
+  author = "author"
+  contributor = "contributors"
+
+[related]
+  threshold = 50
+  includeNewer = true
+  toLower = false
+
+  [[related.indices]]
+    name = "series"
+    weight = 100
+
+  [[related.indices]]
+    name = "categories"
+    weight = 50
+
+  [[related.indices]]
+    name = "tags"
+    weight = 25
+
+  [[related.indices]]
+    name = "date"
+    weight = 10
 
 [markup]
   [markup.goldmark]
