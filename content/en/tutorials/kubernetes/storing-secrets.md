@@ -6,7 +6,7 @@ draft: false
 categories: devops
 tags: secrets
 series: 
-weight: 20
+weight: 100
 author: serainville
 abstract: |
     Storing secrets is key to a secure deployment. In this post you will learn how to

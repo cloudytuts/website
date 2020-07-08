@@ -1,9 +1,10 @@
 ---
-layout: tutorial
+layout: course
+kind: course
 title: Deploying Java to Kubernetes
 series: Up And Running on Kubernetes
-categories: devops
-weight: 10
+categories: kubernetes
+weight: 50
 tags: nodejs kubernetes nginx docker
 date: "2020-06-30"
 description: Learn how to containerize your React applications and deploy them into Kubernetes.
@@ -13,6 +14,10 @@ author: serainville
 contributors:
     - "Bob Martin"
     - bgates
+menu:
+  learning:
+    kubernetes:
+      title: Deploying Java to Kubernetes
 ---
 
 Containerization has seen exponential growth in popular since the advent of Docker. However, it wasn't long before people identified the challenges with orchestrating a containerized environment. While a number of solutions were developed, Kubernetes became king.

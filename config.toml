@@ -16,9 +16,12 @@ timeout = 3000
 
 enableGitInfo = true
 
+sectionPagesMenu = "main"
+
 [permalinks]
 tutorials = "/:sections/:title"
 blog = "/:year/:month/:day/:title"
+topics = "/:sections/:title"
 
 [frontmatter]
 date = ["date", ":filename", "publishDate", "lastmod"]
@@ -70,7 +73,7 @@ section = [ "HTML"]
     lineNos = false
     lineNumbersInTable = true
     noClasses = true
-    style = "monokai"
+    style = "paraiso-dark"
     tabWidth = 4
 
 githubbranch = "master"
