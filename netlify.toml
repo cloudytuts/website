@@ -6,8 +6,3 @@ command = "hugo --gc --minify"
 HUGO_VERSION = "0.74.1"
 HUGO_ENV = "production"
 HUGO_ENABLEGITINFO = "true"
-
-[submodule “themes/cloudytuts”]
-path = themes/cloudytuts
-url = https://github.com/clouytuts/clouytuts-theme.git 
-
