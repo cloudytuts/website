@@ -1,6 +1,5 @@
 ---
 title: "Ansible"
-weight: 60
 category: "devops"
 ---
 

@@ -42,10 +42,10 @@ Werkzeug==1.0.1
 Gunicorn==20.0.4
 ```
 
-### Flask Config
-A configuration file for Python Flask typically has configuration values for each environment the application will run in. 
+### Flask Configs for Containers
+A configuration file for Python Flask defines important values for your application depending on the environment it is deployed to. An example `config.py` file is provided below. Notice how values typically associated with the different environments has been moved to the parent *Config* class.
 
-```python
+```python {linenos=table, hl_lines=["6-9"]}
 import os
 
 class Config(object):
@@ -74,27 +74,27 @@ class TestingConfig(Config):
     SESSION_COOKIE_SECURE = False
 ```
 
+Highlighted are values used to set parameters for the database. These values are typically defined per environment rather than in the inherited parent class *Config*. With Docker and Kubernetes these values will be defined when the application is deployed.
+
+Since the application shouldn't run without database information or the `SECRET_KEY` defined, we've added extra logic to force the application to fault if key variables are not set. For `SECRET_KEY` this ensure session security no matter the environment our application is deployed into.
 
 ## Dockerizing your Flask Apps
-
-
-
 ### Building Docker Images
-When deciding on building a Docker image for your Flask application, choose your base package wisely. In this tutorial the base will be an official Python image (`python:3.8.3-alpine`) as a secure starting point. 
+#### Selecting a Base Image
+When building your own image you will need to base it off a base image. There are a number of options available, from native Ubuntu or Alpine Linux to fully prepared Flask. Our recommendation is to keep things as simple and lightweight as possible, and to find use official images where possible.
 
-For reference, the demoapp consists of the following project directory structure.
-```
-.
-├── demoapp
-│   ├── app
-│   │   ├── __init__.py
-│   │   └── config.py
-│   ├── run.py
-│   └── requirements.tzt
-└── Dockerfile
-```
+For Python Flask it is recommended to use `python` as your base image. It is also recommended to be explicit with which release of the image by specificing a tag. In our example Dockerfile, we've chosen `python:3.8.3-alpine` as our base image.
 
-The project's `Dockerfile` has the following contents. Following today's best practices we've chosen an official Python image based on Alpine linux. Our image should have a minimal footprint with exactly one specific role: running our python-based application. 
+{{< note >}}
+Always be as explicit as possible when setting your base image. Never use the *latest* tag and instead choose a specific version. Latest truly means latest, which means every build could likely use a different base image, which may be problematic when your development, testing, and production environments end up with a wild variety of different Python versions.
+{{< /note >}}
+
+For our example we've choosen to run Python 3.8.3 and to use the smallest image available. Our base image will be `python:3.8.3-alpine`.
+
+#### Dockerfile
+A *Dockerfile* is a set of instructions to build a Docker image using well defined actions, such as `FROM`, `COPY`, `RUN`, `ENTRYPOINT`, `CMD`, `ENV`. Creating a Dockerfile is the first step towards dockerizing your application.
+
+The following is an example dockerfile used to generate a Docker image for a Python Flask image. The same file is used in the Git repository containing our example demoapp. 
 
 ```dockerfile
 FROM python:3.8.3-alpine
@@ -111,9 +111,31 @@ To understand what is happening in the Dockerfile above, the following is a brea
 | <br> | <br> |
 |:-------|:----------- |
 | **FROM**   | The base image used to build our application's image |
-| **COPY**   | Copies the contents of our application directory into the Docker image. |
+| **COPY**   | Copies the contents of our application directory on our local machine into the Docker image. |
 | **RUN**    | Executes `pip install -r requirements.txt` during Docker build  to ensure dependencies are installed. |
 | **CMD**    | Instructs Docker to execute `gunicorn --bind=0.0.0.0:5000 demoapp:app` when a container is started based on the image being built. |
+
+{{< note >}}
+Every Dockerfile action creates a new container layer. Each layer is cached so that subsequent builds can be sped up. Always order your actions such that more frequently modified actions are placed near the end, while actions with fewer changes are at the top. 
+Layers below one that changes will have their caches invalidated, forcing their actions to be executed. This usually causes uncessary build times.
+{{< /note >}}
+
+
+For reference, the demoapp consists of the following project directory structure.
+```
+.
+├── demoapp
+│   ├── app
+│   │   ├── __init__.py
+│   │   └── config.py
+│   ├── run.py
+│   └── requirements.tzt
+└── Dockerfile
+```
+
+
+
+
 
 
 #### Building an Image
@@ -134,6 +156,7 @@ To run your newly generated Docker image use the `docker run` command. As mentio
 
 ```shell
 docker run -d -p 5000:5000 \
+-e FLASK_ENV=development \
 -e DB_NAME=demoapp_dev \
 -e DB_HOST=mysql01.local \
 -e DB_USERNAME=demoapp_dev \
@@ -172,9 +195,26 @@ failed example
 
 
 ## Deploying to Kubernetes
+A Pod is the smallest construct of a Kubernetes resource. A pod can consist of one or more containers that work together to provide a single service.
+
+To deploy an application into Kubernetes you will need to define either a deployment or a pod manifest. Deployment manifests are strongly recommended, as they can control replica scaling as well as scheduling failed pods.
+
+We will create the following manifests to deploy our Python Flask application:
+* Deployment Manifest
+* Service Manifest
+
+In addition, we will need to create the following support manifests to hold our conifugration data for each environment, as well as secrets for sensitve information.
+* ConfigMap manifest, one per environment (development, testing, production)
+* Secrets manfifest, one per environment (development, testing, production)
+
+
+
+
 
 ## Helm Charts (Optional)
-So far in the tutorial we've deployed all of the resources required for our application by hand. Helm is used to generate packages of our application's for Kubernetes and manage releases. 
+So far we have had to manage each Kubernetes resource used by our Flask application manually. As the number of release environments grow, so do the number of resources needing to be maintained. Helm answers that problem by providing a means to template everything.
+
+
 
 ### Installing Helm
 On OSX helm can be installed via brew.
@@ -190,14 +230,24 @@ helm create demoapp
 ```
 
 ### Installing Your Chart
-To deploy your application in Kubernetes will perform a `helm install`.
+To deploy your application in Kubernetes will perform a `helm install`. The command accepts two arguments, the release name and the Helm chart to use. 
+
+```
+helm install <release-name> <chart>
+```
+
+For example, to create a release named *demoapp-dev* using our *demoapp* chart run the following command.
 
 ```shell
-helm install demo-guestbook guestbook
+helm install demoapp-dev demoapp
 ```
+
+
+
+
     | OUTPUT
 ```shell
-NAME: demo-guestbook
+NAME: demoapp-dev
 LAST DEPLOYED: Fri Jan 31 18:08:35 2020
 NAMESPACE: default
 STATUS: deployed

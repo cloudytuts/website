@@ -73,7 +73,7 @@ section = [ "HTML"]
     lineNos = false
     lineNumbersInTable = true
     noClasses = true
-    style = "paraiso-dark"
+    style = "solarized-dark"
     tabWidth = 4
 
 githubbranch = "master"
