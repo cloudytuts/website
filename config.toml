@@ -1,0 +1,82 @@
+baseURL = "https://www.cloudytuts.com/"
+languageCode = "en-us"
+title = "CloudyTuts"
+
+theme = "cloudytuts"
+
+defaultContentLanguage = "en"
+enableRobotsTXT = true
+disableBrowserError = true
+
+contentDir = "content/en"
+
+staticDir = "static"
+
+timeout = 3000
+
+enableGitInfo = true
+
+sectionPagesMenu = "main"
+
+[permalinks]
+tutorials = "/:sections/:title"
+blog = "/:year/:month/:day/:title"
+topics = "/:sections/:title"
+
+[frontmatter]
+date = ["date", ":filename", "publishDate", "lastmod"]
+
+# Be explicit about the output formats. We (currently) only want an RSS feed for the home page.
+[outputs]
+#home = [ "HTML", "RSS", "HEADERS" ]
+home = [ "HTML", "RSS" ]
+page = [ "HTML"]
+section = [ "HTML"]
+
+[taxonomies]
+  category = "categories"
+  tag = "tags"
+  series = "series"
+  author = "author"
+  contributor = "contributors"
+
+[related]
+  threshold = 50
+  includeNewer = true
+  toLower = false
+
+  [[related.indices]]
+    name = "series"
+    weight = 100
+
+  [[related.indices]]
+    name = "categories"
+    weight = 50
+
+  [[related.indices]]
+    name = "tags"
+    weight = 25
+
+  [[related.indices]]
+    name = "date"
+    weight = 10
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+  [markup.highlight]
+    codeFences = true
+    guessSyntax = false
+    hl_Lines = ""
+    lineNoStart = 1
+    lineNos = false
+    lineNumbersInTable = true
+    noClasses = true
+    style = "solarized-dark"
+    tabWidth = 4
+
+githubbranch = "master"
+docsbranch = "master"
+githubWebsiteRepo = "github.com/serainville/cloudytuts.com"
+githubWebsiteRaw = "raw.githubusercontent.com/serainville/cloudytuts.com"
