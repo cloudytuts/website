@@ -1,8 +1,8 @@
 ---
 title: "Kubernetes"
-weight: 60
-abstract: |
+simple_list: false
+description: |
     Series of tutorials that will introduce you to Kubernetes.
 ---
 
-Docker is the bais
+Kubernetes is a great tool for stuff that runs containers!

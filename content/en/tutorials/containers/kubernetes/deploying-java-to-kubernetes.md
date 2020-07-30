@@ -1,5 +1,4 @@
 ---
-layout: course
 kind: course
 title: Deploying Java to Kubernetes
 series: Up And Running on Kubernetes
@@ -29,7 +28,7 @@ Resources have been provided to aid you in following along with this tutorial. T
 ## Getting Started
 ### Prerequisites
 * Basic YAML familiarity, as covered in [Getting Started with YAML](). YAML text formatting, as covered in [YAML text foundamentals](). How hyperlinks work, as covered in [Creating hyperlinks]().
-* Basic Docker familiarity, as coved in [Docker Basics]({{< relref path="../docker/basics.md" >}})
+* Basic Docker familiarity, as coved in [Docker Basics]({{< relref path="../_index.md" >}})
 
 ### Objective
 Learn how to structure your document using semantic tags, and how to work out the structure of a simple website.
@@ -56,7 +55,7 @@ COPY --from=build ./output/myapp.js /var/www/html
 ```
 
 {{< warning >}}
-The example code snippet above does not define a `USER` action, when means the container will run with root privileges, therefore, it is an insecure image. [Setting a user]({{< relref path="tutorials/docker/basics.md">}})
+The example code snippet above does not define a `USER` action, when means the container will run with root privileges, therefore, it is an insecure image. [Setting a user]({{< relref path="tutorials/_index.md">}})
 {{< /warning >}}
 
 By using multistage builds we eliminate the need for placing our source files in the final image, which in most scenerios would be a security concern. Two stages are used in our build, and by doing so we separate our areas of concern. Our first stage compiles the project's static files, and the second stage generates the final image.

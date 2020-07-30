@@ -6,7 +6,7 @@ series: Kubernetes in Action
 date: "2020-07-06"
 tags: python flask kubernetes docker
 git_repo: "https://github.com/cloudytuts/kubernetes-in-action.git"
-abstract: Learn how to containerize and deploy your Python Flask application in a production Kubernetes cluster, as well as how to package your application in Helm.
+description: Learn how to containerize and deploy your Python Flask application in a production Kubernetes cluster, as well as how to package your application in Helm.
 author: serainville
 ---
 
@@ -22,11 +22,16 @@ In this tutorial you will learn how to containerize your Flask applications. You
 * Packaging Flask Applications with Helm
 
 ## Getting Started
+### Prerequisites
+* Docker [installed](https://docs.docker.com/engine/install/) on your development machine.
+* A working Kubernetes cluster.
 
+### Resources
+* Kubernetes resource files used in this tutorial are available in the [CloudyTuts Github repository](http://github.com/cloudytuts/kubernetes-in-action)
 * A Python Flask application. A [demo app]({{<param git_repo>}}) is available for those who do not have one and want to follow along.
 
 ## Preparing Flask for Dockerization
-### Applicaiton Server
+### Application Server
 There is a misconception that Flask can be run directly via it's development server once your application is containerized. I strongly discourage this idea, as the develpoment server is not purpose built for production traffic. 
 
 If you have not added an application server to your project, we strongly advised you do that prior to building a production facing image of your application. In our demonstration app we have added `gunicorn`.
