@@ -4,7 +4,10 @@ title: Java Development for Kubernetes
 series: Up And Running on Kubernetes
 categories: devops
 weight: 10
-tags: java kubernetes docker
+tags:
+    - java
+    - kubernetes
+    - docker
 date: "2020-06-30"
 description: Learn how to containerize your React applications and deploy them into Kubernetes.
 abstract: |

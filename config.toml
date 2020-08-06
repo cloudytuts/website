@@ -41,7 +41,7 @@ section = [ "HTML"]
   contributor = "contributors"
 
 [related]
-  threshold = 50
+  threshold = 1
   includeNewer = true
   toLower = false
 
@@ -50,16 +50,20 @@ section = [ "HTML"]
     weight = 100
 
   [[related.indices]]
+    name = "tags"
+    weight = 65
+
+  [[related.indices]]
     name = "categories"
     weight = 50
 
   [[related.indices]]
-    name = "tags"
-    weight = 25
+    name = "author"
+    weight = 50
 
   [[related.indices]]
-    name = "date"
-    weight = 10
+    name = "section"
+    weight = 25
 
 [markup]
   [markup.goldmark]
@@ -73,7 +77,7 @@ section = [ "HTML"]
     lineNos = false
     lineNumbersInTable = true
     noClasses = true
-    style = "solarized-dark"
+    style = "dracula"
     tabWidth = 4
 
 githubbranch = "master"

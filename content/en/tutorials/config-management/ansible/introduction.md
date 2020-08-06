@@ -4,7 +4,9 @@ layout: tutorial
 date: "2020-07-01"
 weight: 61
 categories: devops
-tags: ansible automation
+tags: 
+    - ansible
+    - automation
 author: srainville
 ---
 

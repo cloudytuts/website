@@ -4,7 +4,11 @@ title: Deploying Java to Kubernetes
 series: Up And Running on Kubernetes
 categories: kubernetes
 weight: 50
-tags: nodejs kubernetes nginx docker
+tags:
+  - nodejs
+  - kubernetes
+  - nginx
+  - docker
 date: "2020-06-30"
 description: Learn how to containerize your React applications and deploy them into Kubernetes.
 abstract: |

@@ -1,7 +1,8 @@
 ---
 title: "Pipelines as Code with Jenkins"
 categories: devops
-tags: jenkins
+tags:
+    - jenkins
 date: "2020-07-01"
 author: srainville
 ---

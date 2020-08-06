@@ -4,7 +4,11 @@ layout: tutorial
 title: Running Python Flask in Kubernetes
 series: Kubernetes in Action
 date: "2020-07-06"
-tags: python flask kubernetes docker
+tags: 
+    - python 
+    - flask 
+    - kubernetes
+    - docker
 git_repo: "https://github.com/cloudytuts/kubernetes-in-action.git"
 description: Learn how to containerize and deploy your Python Flask application in a production Kubernetes cluster, as well as how to package your application in Helm.
 author: serainville
@@ -139,7 +143,10 @@ For reference, the demoapp consists of the following project directory structure
 ```
 
 
-
+{{< warning >}}
+Every Dockerfile action creates a new container layer. Each layer is cached so that subsequent builds can be sped up. Always order your actions such that more frequently modified actions are placed near the end, while actions with fewer changes are at the top. 
+Layers below one that changes will have their caches invalidated, forcing their actions to be executed. This usually causes uncessary build times.
+{{< /warning >}}
 
 
 

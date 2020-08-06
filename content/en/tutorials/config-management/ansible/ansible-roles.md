@@ -3,7 +3,8 @@ layout: tutorial
 title: "Ansible Roles"
 categories: devops
 weight: 10
-tags: playbooks
+tags:
+    - playbooks
 date: "2020-07-01"
 description: Learn how to containerize your React applications and deploy them into Kubernetes.
 abstract: |
