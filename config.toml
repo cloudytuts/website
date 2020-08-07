@@ -1,8 +1,8 @@
 baseURL = "https://www.cloudytuts.com/"
 languageCode = "en-us"
 title = "CloudyTuts"
-
 theme = "cloudytuts"
+googleAnalytics = "UA-39527242-4"
 
 defaultContentLanguage = "en"
 enableRobotsTXT = true
