@@ -5,7 +5,7 @@
     <div id="sidebar">SIDEBAR</div>
         <div id="post">
             
-            <h2 style="color:#fff;">Latest Tutorials</h2>
+            <h2 style="color:#fff;">Latest</h2>
             <style>
                 .tutorial-post-item {
                     display:grid;
@@ -19,7 +19,8 @@
                         <date>{{ .PublishDate.Format "January 2, 2006" }}</date>
                     </div>
                     <div class="post-meta">
-                        <head style="display:block;"><a href="{{ .Permalink }}">{{ .CurrentSection.Title }} {{ .Title }}</a></head>
+                        <div>{{ .Section }}</div>
+                        <head style="display:block;"><a href="{{ .Permalink }}">{{ .Title }}</a></head>
                         <div>{{ .Description }}</div>
                     </div>
                 </div>
