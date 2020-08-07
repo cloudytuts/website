@@ -22,6 +22,7 @@ sectionPagesMenu = "main"
 tutorials = "/:sections/:title"
 blog = "/:year/:month/:day/:title"
 topics = "/:sections/:title"
+news = "/news/:year/:month/:day/:title"
 
 [frontmatter]
 date = ["date", ":filename", "publishDate", "lastmod"]
