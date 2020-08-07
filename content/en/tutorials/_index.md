@@ -4,4 +4,5 @@ abstract: "Automated container deployment, scaling, and management"
 cid: home
 simple_list: true
 no_list: false
+latest_posts: true
 ---
