@@ -4,7 +4,8 @@ categories: devops
 tags:
     - jenkins
 date: "2020-07-01"
-author: srainville
+author: serainville
+draft: true
 ---
 
 ## Getting Started
