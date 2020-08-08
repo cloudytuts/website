@@ -14,9 +14,6 @@ description: Learn how to containerize your React applications and deploy them i
 abstract: |
     Learn how to containerize your React applications and deploy them into Kubernetes.|
 author: serainville
-contributors:
-    - "Bob Martin"
-    - bgates
 ---
 
 Containerization has seen exponential growth in popular since the advent of Docker. However, it wasn't long before people identified the challenges with orchestrating a containerized environment. While a number of solutions were developed, Kubernetes became king.
@@ -46,7 +43,7 @@ COPY --from=build ./output/myapp.js /var/www/html
 ```
 
 {{< warning >}}
-The example code snippet above does not define a `USER` action, when means the container will run with root privileges, therefore, it is an insecure image. [Setting a user]({{< relref path="tutorials/_index.md">}})
+The example code snippet above does not define a `USER` action. By default a container will run with root privileges, therefore, it is an insecure image. [Setting a user]({{< relref path="tutorials/_index.md">}})
 {{< /warning >}}
 
 By using multistage builds we eliminate the need for placing our source files in the final image, which in most scenerios would be a security concern. Two stages are used in our build, and by doing so we separate our areas of concern. Our first stage compiles the project's static files, and the second stage generates the final image.
@@ -91,12 +88,8 @@ spec:
 Metadata is an important part of grouping common resources in Kubernetes. At minimum a deployment requires a `name` key, however, in larger, more complex Kubernetes environments you will need to expand your usage of metadata. 
 
 {{< warning >}}
-Do not **attempt** to publish to production without adjusting the user.
+Never **deploy** a Docker container to production without adjusting the user.
 {{< /warning >}}
-
-{{< note >}}
-Powering down the receptor is a good practice.
-{{< /note >}}
 
 Your success in implementing blue-green, canary, or other deployment strategies will depend on your ability separate and group common resources. 
 
@@ -193,9 +186,6 @@ Aside from being encrpted, secrets are identical to ConfigMaps. They can be key-
 apiVersion: v1
 kind: Secret
 ```
-
-## Helm
-H
 
 ## Further Reading
 
