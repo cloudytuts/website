@@ -18,16 +18,13 @@ CloudyTuts uses github issues to track documentation issues and requests. If you
 1. Check the [CloudyTuts issues list](http://github.com/cloudytuts/website/issues) as you might find out the issue is a duplicate.
 1. Use the [included template for every new issue](). When you create a bug report, include as many details as possible and include suggested fixes to the issue.
 
-### Submitting Documentation Pull Requests
+### Submitting Post Pull Requests
 If you're fixing an issue in the existing documentation, you should submit a PR against the master branch. Follow [these instructions to create a documentation pull request against the Cloudytuts repository]().
 
 ## More Info
 For more information about contributing to the Kubernetes documentation, see:
 
-* [Contribute to Kubernetes docs]({{< relref path="blog/_index.md" >}})
-* [Page Content Types]({{< relref path="tutorials/_index.md" >}})
-* [Documentation Style Guide]({{< relref path="tutorials/_index.md" >}})
-* [Localizing Kubernetes Documentation]({{< relref path="tutorials/_index.md" >}})
+* [Page Content Types]({{< relref path="page-content-types" >}})
 
 ## Thank you!
 CloudyTuts thrives on community participation, and we appreciate your contributions to our website!
