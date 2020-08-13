@@ -2,9 +2,6 @@
 {{ .Content }}
 
 <div id="content-listpage">
-    <div id="sidebar" style="grid-row: 1;">
-        <img style="border-radius:12px;" src="/images/contribute-to-cloudytuts.png" alt="Contribute to CloudyTuts">
-    </div>
     <div id="post" style="grid-row: 1;">
         
         <h2 style="color:#fff;">Latest</h2>
@@ -47,6 +44,8 @@
             {{ end }}
         </div>
     </div>
-
+    <div id="sidebar">
+        {{ partial "ad250" . }}
+    </div>
 </div>
 {{ end }}
