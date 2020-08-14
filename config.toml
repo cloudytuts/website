@@ -8,6 +8,8 @@ defaultContentLanguage = "en"
 enableRobotsTXT = true
 disableBrowserError = true
 
+paginate = 9
+
 contentDir = "content/en"
 
 staticDir = "static"
@@ -33,6 +35,10 @@ date = ["date", ":filename", "publishDate", "lastmod"]
 home = [ "HTML", "RSS" ]
 page = [ "HTML"]
 section = [ "HTML"]
+
+[params]
+  mainSections = ["blog","tutorials","guides","news"]
+
 
 [taxonomies]
   category = "categories"
