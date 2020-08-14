@@ -8,6 +8,8 @@ defaultContentLanguage = "en"
 enableRobotsTXT = true
 disableBrowserError = true
 
+paginate = 9
+
 contentDir = "content/en"
 
 staticDir = "static"
@@ -35,7 +37,7 @@ page = [ "HTML"]
 section = [ "HTML"]
 
 [params]
-  mainSections = ["blog","tutorials","guides"]
+  mainSections = ["blog","tutorials","guides","news"]
 
 
 [taxonomies]
