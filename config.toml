@@ -34,6 +34,10 @@ home = [ "HTML", "RSS" ]
 page = [ "HTML"]
 section = [ "HTML"]
 
+[params]
+  mainSections = ["blog","tutorials","guides"]
+
+
 [taxonomies]
   category = "categories"
   tag = "tags"

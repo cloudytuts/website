@@ -10,7 +10,8 @@
             }
         </style>
         <div class="tutorial-post-list" style="display:flex; flex-flow: row wrap; justify-content: flex-start; gap: 1em;">
-            {{ range where .Site.Pages.ByPublishDate.Reverse "Kind" "page" }}
+            {{ $pages := where site.RegularPages.ByPublishDate.Reverse "Type" "in" site.Params.mainSections }}
+            {{ range $pages }}
             <div class="tutorial-post-item" style="flex: 1 1 250px; background-color: rgba(255,255,255,0.05); border-radius:8px; padding:1em;">
                 <div class="post-meta">
                     <div style="text-transform: capitalize;">{{ .Section }}</div>
