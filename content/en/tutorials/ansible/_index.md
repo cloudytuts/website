@@ -1,5 +1,5 @@
 ---
 title: "Ansible"
 description: |
-    Series of tutorials that will introduce you to Kubernetes.
+    Ansible Tutorials - Ansible is an open source configuration management tool written in Python. 
 ---

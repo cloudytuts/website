@@ -1,6 +1,6 @@
 ---
 title: "Tutorials"
-abstract: "Automated container deployment, scaling, and management"
+description: "Ansible, Docker, Jenkins, Kubernetes, Terraform, DevOps, DevSecOps"
 cid: home
 simple_list: true
 no_list: false

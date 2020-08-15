@@ -1,7 +1,7 @@
 ---
 title: "Jenkins"
-abstract: |
-    Series of tutorials that will introduce you to Kubernetes.
+description: |
+    Jenkins tutorials - Jenkins is a popular open source build server used for implementing continuous integration and continuous delivery. 
 ---
 
 Docker is the bais
