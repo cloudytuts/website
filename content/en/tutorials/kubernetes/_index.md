@@ -2,5 +2,5 @@
 title: "Kubernetes"
 simple_list: false
 description: |
-    Series of tutorials that will introduce you to Kubernetes.
+    Kubernetes tutorials - Kubernetes (k8s) is an open source system for deploying, scaling, and managing containerized applications.
 ---

@@ -1,5 +1,5 @@
 ---
 title: "Docker"
 description: |
-    Series of tutorials that will introduce you to Kubernetes.
+    Docker Tutorials - Docker is a popular containerization technology for running applications
 ---

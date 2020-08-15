@@ -1,5 +1,6 @@
 ---
 title: "Guides"
-description: "Automated container deployment, scaling, and management"
+description: |
+    "Comprehensive guides for Ansible, Docker, Kubernetes, Terraforms, AWS, Google Cloud, Digital Ocean"
 cid: home
 ---
