@@ -7,20 +7,20 @@ tags:
   - ansible
   - vault
 description: |
-    Learn how to use the new Ansible Unvault plugin in a lookup to read the contents of any file, vaulted an non vaulted. 
+    Learn how to use the new Ansible Unvault plugin in a lookup to read the contents of any file, vaulted or non vaulted. Ansible will automatically detect and decrypt as necessary. 
 ---
 
-Unvault is a plugin introcuded by the Ansible core team which allows you to read contents of any file, vaulted or not. Used within a `lookup` you can retrieve the contents of a specific file. Ansible we determine whether it is vualted or not and apply the appropriate action to read it.
+Unvault is a plugin introduced by the Ansible core team which allows you to read contents of any file, vaulted or not. Used within a `lookup` you can retrieve the contents of a specific file. Ansible we determine whether it is vualted or not and apply the appropriate action to read it.
 
 
 ## Create a regular file
-The following file be used as an example non vaulted file that will have its contents read using `unvault` in a lookup. The file's name will be `foo.txt`, and it will have the following contents:
+The following file be used as an example non-vaulted file that will have its contents read using `unvault` in a lookup. The file's name will be `foo.txt`, and it will have the following contents:
 
 ```text
 hello, world!
 ```
 
-## Lookup contents of file
+## Lookup contents of a file
 In order to retrieve the contents of the file we use a lookup with the `unvault` plugin, and specify the path to the file on the Ansible controller's file system.
 
 ```yaml
@@ -48,7 +48,7 @@ hello, world! I'm vaulted!
 ```
 
 ## Lookup contents of vaulted file
-Using a lookup with the `unvault` plugin, we can read the contents of the vaulted file `bar.txt.vaulted`. In the example below, like in the non vualted file example above, we are outputting the contents of the file in a debug message.
+Using a lookup with the `unvault` plugin we can read the contents of the vaulted file `bar.txt.vaulted`. In the example below, like in the non-vualted file example above, we are outputting the contents of the file in a debug message.
 
 ```yaml
 - name: Read contents of bar.txt.vaulted

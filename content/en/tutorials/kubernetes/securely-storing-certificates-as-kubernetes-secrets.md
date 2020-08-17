@@ -31,7 +31,7 @@ kubectl create secret tls webapp-tls-production --cert=webapp.pem --key=webapp.k
 
 ### Dryrun
 
-The `kubectl` command provides a way to perform a dryrun of the `kubectl create secret` commad. Use this as away to verify your secret is created correctly and minimize errors.
+The `kubectl` command provides a way to perform a dryrun of the `kubectl create secret` command. Use this as away to verify your secret is created correctly and minimize errors.
 
 ```shell
 kubectl create secret tls webapp-tls-production --cert=webapp.pem --key=webapp.key
@@ -54,3 +54,4 @@ data:
   tls.crt: --BASE64 ENCODED STRING--
   tls.key: --BASE64 ENCODED STRING--
 ```
+

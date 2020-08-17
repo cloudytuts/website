@@ -13,9 +13,9 @@ author: serainville
 ---
 
 ## Getting Started
-### Prequisites
+### Prerequisites
 * Basic understanding of YAML
 * Basic understanding of Ansible
 
 ## Why Roles
-Roles allow you to separate your areas of conern into modular pieces, which promotes sharing and colaboration. Rather than three different teams writing a role for Apache Web Server, for example, a single role can be created instead.
+Roles allow you to separate your areas of concern into modular pieces, which promotes sharing and collaboration. Rather than three different teams writing a role for Apache Web Server, for example, a single role can be created instead.

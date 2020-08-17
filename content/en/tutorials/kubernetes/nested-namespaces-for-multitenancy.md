@@ -6,10 +6,10 @@ author: serainville
 tags:
   - namespaces
 description: |
-    Learn how to implement nested namespaces in Kubernetes using the new Hierarchical Namespaces resource type, and move away from two dimensional resource organization.
+    Learn how to implement nested namespaces in Kubernetes using the new Hierarchical Namespaces resource type, and move away from two-dimensional resource organization.
 ---
 
-Namespaces are way of organizing resources into common groups. The limitation up until now has been the flat, two-dimensional heirarchy of namespaces. 
+Namespaces are way of organizing resources into common groups. The limitation up until now has been the flat, two-dimensional hierarchy of namespaces. 
 
 Unfortunately, at the time of writing this tutorial, hierarchical namespaces are not a built-in feature of Kubernetes or kubectl. Instead, it is available as an extension to be installed on your cluster, which an accompanying plugin for kubectl.
 
