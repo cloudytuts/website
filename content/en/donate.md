@@ -11,5 +11,5 @@ If you have found CloudyTuts helpful and you want to support the community, plea
 
 [Paypal](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=J8TC38ZFWNX4W&currency_code=CAD&source=url)
 
-
+[Patreon](https://www.patreon.com/cloudytuts)
 
