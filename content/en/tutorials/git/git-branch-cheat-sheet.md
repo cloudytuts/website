@@ -9,7 +9,7 @@ description: |
     Use this cheat sheet to learn how to manage your Git branches and never again forget how to accomplish some of the most common tasks.
 ---
 
-Git is powerful version control system and it can be difficult keeping track of all the common commands. In this cheat sheet we will give you a break down off the most popular, most used commands for you to quickly reference as needed.
+Git is a powerful version control system and it can be difficult keeping track of all the common commands. In this cheat sheet we will give you a break down off the most popular, most used commands for you to quickly reference as needed.
 
 ## Branches
 Git branches are used to organize code changes to our repository, keeping them well away from our release branches until the development work is complete. As mentioned above, Git is a powerful version control system, which working on something as mundane as branches can attest to. 
@@ -52,7 +52,7 @@ git branch feature/add-user-profile
 ```
 
 ### New Branch based on CommitID
-When creating a new branch you can base it off of an existing commit ID. To do that you use the following `git` coommand syntax.
+When creating a new branch you can base it off of an existing commit ID. To do that you use the following `git` command syntax.
 ```shell
 git branch <branch-name> <commit-id>
 ```
@@ -76,7 +76,7 @@ git branch --track fix/invalid-form-submission origin/fix/invalid-form-submissio
 ```
 
 ### Delete Local Branches
-Local branches should be removed from your local repository when they have fullfilled this purpose. To remove a branch from your local repository use the `git branch` command with the `-D` flag.
+Local branches should be removed from your local repository when they have fulfilled this purpose. To remove a branch from your local repository use the `git branch` command with the `-D` flag.
 
 ```shell
 git branch -D <branch-name>
@@ -85,7 +85,7 @@ git branch -D <branch-name>
 This operation will only remove the branch from your local repository. If there is a matching remote branch it will be left alone.
 
 ### Delete Remote Branches
-Just as a local repository should be kept clean and organized by removing uneeded branches, so should the remote repository. In order to delete branches from a remote repository you must perform a `git push` with the `--delete` flag.
+Just as a local repository should be kept clean and organized by removing unneeded branches, so should the remote repository. In order to delete branches from a remote repository you must perform a `git push` with the `--delete` flag.
 
 ```shell
 git push --delete origin/<remote-branch-name>

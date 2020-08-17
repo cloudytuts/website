@@ -42,7 +42,7 @@ For example, if your remote repository is named `origin` and the branch you woul
 ```shell
 git push --delete origin feature/password-reset-form
 ```
-Which will ouput the following if the branch is succesfully deleted.
+Which will output the following, if the branch is successfully deleted.
 ```shell
 remote: This repository moved. Please use the new location:
 remote:   https://github.com/cloudyyuts/demo-app.git

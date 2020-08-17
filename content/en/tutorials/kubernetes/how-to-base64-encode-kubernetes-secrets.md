@@ -9,7 +9,7 @@ description: |
     Learn how to encode and decode Kubernetes secrets using the base64 command in Linux and OSX.
 ---
 
-Kubernetes secrets allow us to segregate our secret and sensitive information from our resources. Instead of storing the data as clear text inside of, for example, a Pod manifest we can add a place holder that is replaced by Kubernetes when the Pod is creaed.
+Kubernetes secrets allow us to segregate our secret and sensitive information from our resources. Instead of storing the data as clear text inside of, for example, a Pod manifest we can add a place holder that is replaced by Kubernetes when the Pod is created.
 
 Kubernetes stores secrets as base64 encoded strings and encrypts the data on disk. In order to save a secret in Kubernetes it must be converted to a base64 string.
 
@@ -67,5 +67,4 @@ stringData:
   DB_PASSWORD: "super-secret-password"
   DB_USER: "demo-app1"
 ```
-
 

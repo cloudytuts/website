@@ -11,10 +11,10 @@ description: |
 
 In the era of git an age a common question developers and SREs ask themselves is "where should I store my configs?" Should configurations be stored in an application's repository or should it be stored separately? 
 
-With the introduction of **GitOps** this question will be asked more frequently. GitOps desires to achieve a goal of having all operations done through version control systems. GitOps implementations can be more difficult in some environment depending on the config strategy employed. 
+With the introduction of **GitOps** this question will be asked more frequently. GitOps desires to achieve a goal of having all operations done through version control systems. GitOps implementations can be more difficult in some environments depending on the config strategy employed. 
 
 ## Understanding Lifecycles
-The reality is configurations and applicaiton source code has very different lifecycles. An application typically has frequent code commits to add features, fix bugs, and address technical debt. Configurations, on the other hand are rarely updated.
+The reality is configurations and application source code has very different lifecycles. An application typically has frequent code commits to add features, fix bugs, and address technical debt. Configurations, on the other hand are rarely updated.
 
 Configurations tend to be static in nature. Most features won't require a configuration update, and
 
