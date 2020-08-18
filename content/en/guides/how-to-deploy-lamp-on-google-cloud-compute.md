@@ -6,11 +6,63 @@ author: serainville
 tags:
     - Google Cloud
     - LAMP
+    - WordPress
 description: |
     Learn how to deploy a LAMP server on Google Cloud Compute using the gcloud CLI and startup scripts
 ---
 
 A LAMP server (Linux, Apache, MySQL, PHP) is one of the most common server setups on the Internet, even after more than a decade. It is still true that PHP powers today's web communities, despite challenges from more recent languages and frameworks. 
+
+## Getting Started
+### What's Covered
+* Create a network using gcloud
+* Create a compute instance using gcloud
+* Configure database for WordPress
+* Configure WordPress
+
+## Preparing to Provision
+### Selecting a Base Image
+A compute instance is a virtual machine that runs an operating system. To deploy a compute instance you will need to select which operating system it will run by selecting a base image.
+
+A list of available images can be outputted using the `gcloud compute images list` command. An unfiltered list is very extensive, so it is recommended you filter it.
+
+```shell
+glcoud compute images list
+```
+    | Truncated Output
+```shell
+NAME                                                  PROJECT            FAMILY                            DEPRECATED  STATUS
+centos-6-v20200811                                    centos-cloud       centos-6                                      READY
+centos-7-v20200811                                    centos-cloud       centos-7                                      READY
+centos-8-v20200811                                    centos-cloud       centos-8                                      READY
+coreos-alpha-2514-1-0-v20200526                       coreos-cloud       coreos-alpha                                  READY
+coreos-beta-2513-2-0-v20200526                        coreos-cloud       coreos-beta                                   READY
+coreos-stable-2512-3-0-v20200526                      coreos-cloud       coreos-stable                                 READY
+cos-77-12371-1072-0                                   cos-cloud          cos-77-lts                                    READY
+cos-81-12871-1185-0                                   cos-cloud          cos-81-lts                                    READY
+cos-beta-81-12871-117-0                               cos-cloud          cos-beta                                      READY
+```
+
+A filter is applied using the `-filter` flag, which accepts regex. To filter the list for **Ubuntu** images, you would use the following command.
+
+```shell
+glcoud compute images --filter ubuntu
+```
+    | Output
+```shell
+NAME                                  PROJECT          FAMILY                   DEPRECATED  STATUS
+ubuntu-1604-xenial-v20200807          ubuntu-os-cloud  ubuntu-1604-lts                      READY
+ubuntu-1804-bionic-v20200807          ubuntu-os-cloud  ubuntu-1804-lts                      READY
+ubuntu-2004-focal-v20200810           ubuntu-os-cloud  ubuntu-2004-lts                      READY
+ubuntu-minimal-1604-xenial-v20200807  ubuntu-os-cloud  ubuntu-minimal-1604-lts              READY
+ubuntu-minimal-1804-bionic-v20200806  ubuntu-os-cloud  ubuntu-minimal-1804-lts              READY
+ubuntu-minimal-2004-focal-v20200729   ubuntu-os-cloud  ubuntu-minimal-2004-lts              READY
+```
+
+
+
+### Machine Type
+Machine types are hardware templates for your compute instance. These templates determine the amount of memory and CPU your compute instance will be given. Your primary costs for running a compute instance will be determined by the machine type you use; machine types with more CPU and/or memory will high a much higher operating cost.
 
 ## Provision a Compute Instance
 ### Create network
@@ -105,4 +157,95 @@ Aug 18 02:15:42 wordpress-lamp-2 startup-script: INFO startup-script: Get:3 http
 Aug 18 02:15:42 wordpress-lamp-2 startup-script: INFO startup-script: Get:4 http://archive.canonical.com/ubuntu focal InRelease [12.1 kB]
 Aug 18 02:15:42 wordpress-lamp-2 startup-script: INFO startup-script: Get:5 http://us-central1.gce.archive.ubuntu.com/ubuntu focal/universe amd64 Packages [8628 kB]
 ```
+## Firewall Rules
+If you did not specify to allow HTTP and HTTPS traffic into your compute instance, you will need to do that now.
 
+### Allow HTTP Access
+To open HTTP traffic to your newly provisioned compute instance, run the following command.
+```shell
+gcloud compute firewall-rules create --network=default default-allow-http --allow=tcp:80
+```
+### Allow HTTPS Access
+To open HTTPS traffic to your newly provisioned compute instance, run the following commnad.
+```shell
+gcloud compute firewall-rules create --network=default default-allow-https --allow=tcp:443
+```
+### Allow SSH Access
+If you plan on administrating your server via SSH you will need to open up access to it, as well. 
+```shell
+gcloud compute firewall-rules create --network=default default-allow-ssh --allow=tcp:22
+```
+
+## SSH using GCloud
+When you're server is fully provisioned you can SSH into it using the `gcloud compute ssh` command. 
+
+The basic syntax for the command is shown below. The default user will be that of the account you have logged in with gcloud. You do not need to specify a user, unless you wish to SSH into the server using a different account.
+```shell
+gcloud compute ssh [USER@] INSTANCE [--zone=ZONE] 
+```
+
+For example, let's log into our `wordpress-lamp-1` compute instance.
+
+```shell
+gcloud compute ssh wordpress-lamp-1 --zone=us-central1-a
+```
+
+Alternatively, if you wanted to SSH user a different account, you would use the following example:
+```shell
+gcloud compute ssh operator1@wordpress-lamp-1 --zone=us-central1-a
+```
+
+## Database
+
+So far in this guide we've covered provisioning the compute instance, which is to say we've deployed a new instance and installed all of our required packages. The next step is configuring those packages and setting up a database.
+
+{{< note >}}
+If you are not SSH'd into the server, do so now.
+{{< /note >}}
+
+### Creating a database
+Console into the MySQL server instance and create a new database for WordPress.
+1. Console into the database server instance
+    ```shell
+    mysql -u root -p
+    ```
+1. Create a new database for your WordPress site
+    ```shell
+    create database wordpress_db;
+    ```
+
+### Create Database User
+No application should connect to its backend database with root credentials. An application should only be granted permissions to the databases it interacts with, and only be given the exact permissions it requires to function.
+
+1. Create a database user for WordPress. 
+    ```shell
+    create user 'wordpress'@'localhost' identified by 'super-secret-password';
+    ```
+1. Assign the user access to the WordPress database
+    ```shell
+    grant select,insert,delete on '*.wordpress' to 'wordpress'@'localhost';
+    ```
+1. Lastly, flush the database cache to apply the new user permissions.
+    ```shell
+    flush;
+    ```
+
+## WordPress Config
+We are nearly done! All that's left to do is configure out WordPress installation to point to our database.
+
+1. Navigate to the root directory of your WordPress installation (the directory the contents of `latest.tar.tz` were extracted to).
+    ```shell
+    cd path\to\extracted\wordpress
+    ```
+1. Copy the `wp_config.php` to `wp_config.php`
+    ```shell
+    cp wp_config.php wp_config.php
+    ```
+1. Open `wp_config.php` into the text editor of your choice.
+    ```shell
+    vi wp_config.php
+    ```
+1. Find and modify the lines that configure WordPress' connection to a database.
+
+## Apache vhost
+The very last step is to host our WordPress site through Apache. 
