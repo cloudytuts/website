@@ -9,6 +9,7 @@ tags:
     - WordPress
 description: |
     Learn how to deploy a LAMP server on Google Cloud Compute using the gcloud CLI and startup scripts
+repo: https://github.com/cloudytuts/google-cloud-examples/tree/master/compute/gcloud-wordpress-lamp
 ---
 
 A LAMP server (Linux, Apache, MySQL, PHP) is one of the most common server setups on the Internet, even after more than a decade. It is still true that PHP powers today's web communities, despite challenges from more recent languages and frameworks. 
