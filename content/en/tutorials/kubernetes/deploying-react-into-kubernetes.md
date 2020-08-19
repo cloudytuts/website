@@ -181,9 +181,9 @@ Aside from being encrypted, secrets are identical to ConfigMaps. They can be key
 ### Creating Secrets Manifest
 Create a new YAML file with the following structure. Your sensitive information will be stored under the `data` key, using a unique parameter name. 
 
-{{ note }}
+{{< note >}}
 When using the `data` key, secrets must be ***base64*** encoded.
-{{ /note }}
+{{< /note >}}
 
 ```yaml
 apiVersion: v1
