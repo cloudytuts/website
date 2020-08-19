@@ -111,10 +111,6 @@ The example deployment YAML file consists of four common labels.
 
 The spec defines what container to deploy and how it will be deployed. It is here where you set the image to be deployed and whether there are replicas, for example. 
 
-
-
-## Exposing React in Kubernetes
-
 ## ConfigMaps
 Application configurations can differ from one environment to another. If all configurations were to be hard-coded into your application you would lose the ability of being portable; a single image of your application could not be deployed into any environment as environment specific images would be required. 
 
@@ -251,6 +247,29 @@ We have combined both  `configMaps` and  `secrets` in our deployment. Our non-se
 
 ## Accessing ConfigMap and Secrets
 Both the ConfigMap data and the Secrets data are available as environment variables. Within your React application you will need to pull in the environment variables in order to use them. The variable names are the the `env` `name` values. For example, the database user enviroment is accessed using the `DB_USER` environment variable.
+
+## Exposing React in Kubernetes
+The final step for your React app is to expose through a Kubernetes service. While you could expose a pod directly to traffic, the lifecycle of pods is typically very short. A service, on the hand, has a much longer, almost permanent lifecycle. 
+
+Services also allow load balancing traffic between a cluster of pods.
+
+Services are created using a service manifest. the following example serves your React app through a load balancer.
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: game-demo
+spec:
+  type: loadBalancer
+  selector:
+    app: game-demo
+  ports:
+    - protocol: TCP
+      port: 80
+```
+
+
 
 ## Further Reading
 
