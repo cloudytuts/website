@@ -39,7 +39,7 @@ data:
 Notice the values for `DB_PASSWORD` and `DB_USER`. The values are actually base64 encoded strings, which is how Kubernetes stores secrets in its database. When creating a Secrets manifest you must base64 encode your string values.
 
 ## Base64 Encode Secrets
-Base64 encoding a string in **OSX** and **Linux** can be done from the shell. Both operating systems typically come bundled with the `base64` command line tool.
+Base64 encoding a string in **OSX** and **Linux** can be done from the shell. Both operating systems typically come bundled with the `base64` command-line tool.
 
 In order to convert a string into a valid base64 encoded string using the base64 command, we echo the string and pipe the output to the base64 command. The `-n` flag set for `echo` ensures only the characters within the commas will be encoded.
 

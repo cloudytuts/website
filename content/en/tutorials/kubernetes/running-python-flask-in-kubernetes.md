@@ -36,7 +36,7 @@ In this tutorial you will learn how to containerize your Flask applications. You
 
 ## Preparing Flask for Dockerization
 ### Application Server
-There is a misconception that Flask can be run directly via it's development server once your application is containerized. I strongly discourage this idea, as the develpoment server is not purpose built for production traffic. 
+There is a misconception that Flask can be run directly via it's development server once your application is containerized. I strongly discourage this idea, as the development server is not purpose built for production traffic. 
 
 If you have not added an application server to your project, we strongly advised you do that prior to building a production facing image of your application. In our demonstration app we have added `gunicorn`.
 
@@ -92,13 +92,13 @@ Since the application shouldn't run without database information or the `SECRET_
 #### Selecting a Base Image
 When building your own image you will need to base it off a base image. There are a number of options available, from native Ubuntu or Alpine Linux to fully prepared Flask. Our recommendation is to keep things as simple and lightweight as possible, and to find use official images where possible.
 
-For Python Flask it is recommended to use `python` as your base image. It is also recommended to be explicit with which release of the image by specificing a tag. In our example Dockerfile, we've chosen `python:3.8.3-alpine` as our base image.
+For Python Flask it is recommended to use `python` as your base image. It is also recommended to be explicit with which release of the image by specifying a tag. In our example Dockerfile, we've chosen `python:3.8.3-alpine` as our base image.
 
 {{< note >}}
 Always be as explicit as possible when setting your base image. Never use the *latest* tag and instead choose a specific version. Latest truly means latest, which means every build could likely use a different base image, which may be problematic when your development, testing, and production environments end up with a wild variety of different Python versions.
 {{< /note >}}
 
-For our example we've choosen to run Python 3.8.3 and to use the smallest image available. Our base image will be `python:3.8.3-alpine`.
+For our example we've chosen to run Python 3.8.3 and to use the smallest image available. Our base image will be `python:3.8.3-alpine`.
 
 #### Dockerfile
 A *Dockerfile* is a set of instructions to build a Docker image using well defined actions, such as `FROM`, `COPY`, `RUN`, `ENTRYPOINT`, `CMD`, `ENV`. Creating a Dockerfile is the first step towards dockerizing your application.
@@ -126,7 +126,7 @@ To understand what is happening in the Dockerfile above, the following is a brea
 
 {{< note >}}
 Every Dockerfile action creates a new container layer. Each layer is cached so that subsequent builds can be sped up. Always order your actions such that more frequently modified actions are placed near the end, while actions with fewer changes are at the top. 
-Layers below one that changes will have their caches invalidated, forcing their actions to be executed. This usually causes uncessary build times.
+Layers below one that changes will have their caches invalidated, forcing their actions to be executed. This usually causes unnecessary build times.
 {{< /note >}}
 
 
@@ -145,13 +145,13 @@ For reference, the demoapp consists of the following project directory structure
 
 {{< warning >}}
 Every Dockerfile action creates a new container layer. Each layer is cached so that subsequent builds can be sped up. Always order your actions such that more frequently modified actions are placed near the end, while actions with fewer changes are at the top. 
-Layers below one that changes will have their caches invalidated, forcing their actions to be executed. This usually causes uncessary build times.
+Layers below one that changes will have their caches invalidated, forcing their actions to be executed. This usually causes unnecessary build times.
 {{< /warning >}}
 
 
 
 #### Building an Image
-To build a Docker images from a Dockerfile, the `docker build` command is executed. In the example below we've added `-t myproject:v1.0.0` to tag the image, giving it a name that will be referenced when running a container based on it. The '`.`' at the end instructed docker build to load a Dockerfile from the current directory.
+To build Docker images from a Dockerfile, the `docker build` command is executed. In the example below we've added `-t myproject:v1.0.0` to tag the image, giving it a name that will be referenced when running a container based on it. The '`.`' at the end instructed docker build to load a Dockerfile from the current directory.
 
 ```shell
 docker build -t myproject:v1.0.0 .
@@ -176,7 +176,7 @@ docker run -d -p 5000:5000 \
 demoapp:1.0.0
 ```
 
-The `docker run` command above uses the `-e` flag to set environment variables. For non-sensitive information this is acceptable, but notice that we are also enteirng our database password in clear text. Unfortunately, this is a limitation of vanilla Docker. Docker Compose and Kubernetes both have a way of better handling sensitive information, which will be discussed later. 
+The `docker run` command above uses the `-e` flag to set environment variables. For non-sensitive information this is acceptable, but notice that we are also entering our database password in clear text. Unfortunately, this is a limitation of vanilla Docker. Docker Compose and Kubernetes both have a way of better handling sensitive information, which will be discussed later. 
 
 To verify the container launched successfully and your Flask application is accepting connections, use the `docker ps` command. The command will output a list of all running containers.
 
@@ -215,9 +215,9 @@ We will create the following manifests to deploy our Python Flask application:
 * Deployment Manifest
 * Service Manifest
 
-In addition, we will need to create the following support manifests to hold our conifugration data for each environment, as well as secrets for sensitve information.
+In addition, we will need to create the following support manifests to hold our configuration data for each environment, as well as secrets for sensitive information.
 * ConfigMap manifest, one per environment (development, testing, production)
-* Secrets manfifest, one per environment (development, testing, production)
+* Secrets manifest, one per environment (development, testing, production)
 
 
 

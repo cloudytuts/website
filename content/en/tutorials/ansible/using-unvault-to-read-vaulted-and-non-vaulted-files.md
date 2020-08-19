@@ -10,7 +10,7 @@ description: |
     Learn how to use the new Ansible Unvault plugin in a lookup to read the contents of any file, vaulted or non vaulted. Ansible will automatically detect and decrypt as necessary. 
 ---
 
-Unvault is a plugin introduced by the Ansible core team which allows you to read contents of any file, vaulted or not. Used within a `lookup` you can retrieve the contents of a specific file. Ansible we determine whether it is vualted or not and apply the appropriate action to read it.
+Unvault is a plugin introduced by the Ansible core team which allows you to read contents of any file, vaulted or not. Used within a `lookup` you can retrieve the contents of a specific file. Ansible we determine whether it is vaulted or not and apply the appropriate action to read it.
 
 
 ## Create a regular file
@@ -34,7 +34,7 @@ The output of the debug message will contain the contents of the `foo.txt` file.
 hello, world!
 ```
 
-## Create a vualted file
+## Create a vaulted file
 Our next example will be of a vaulted file named `bar.txt.vaulted`. Create a new vaulted file named `bar.txt.vaulted`.
 
 ```shell
@@ -48,7 +48,7 @@ hello, world! I'm vaulted!
 ```
 
 ## Lookup contents of vaulted file
-Using a lookup with the `unvault` plugin we can read the contents of the vaulted file `bar.txt.vaulted`. In the example below, like in the non-vualted file example above, we are outputting the contents of the file in a debug message.
+Using a lookup with the `unvault` plugin we can read the contents of the vaulted file `bar.txt.vaulted`. In the example below, like in the non-vaulted file example above, we are outputting the contents of the file in a debug message.
 
 ```yaml
 - name: Read contents of bar.txt.vaulted

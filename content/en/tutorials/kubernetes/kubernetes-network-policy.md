@@ -1,5 +1,5 @@
 ---
-title: How to create Kubernetes Network Policies for Wordpress
+title: How to create Kubernetes Network Policies for WordPress
 author: serainville
 date: "2020-08-07"
 tags:
@@ -10,14 +10,14 @@ description: |
     Learn how to craft effective network policies in Kubernetes to secure connectivity into your cluster and between your pods.
 ---
 
-Out of the box pods accepts accept traffic from any source, provided traffic can be routed to it. Internally, every pod is able to communicate with any other pod in the same cluster. In today's hyper security aware world this raises a few alarm bells. 
+Out of the box pods accepts accept traffic from any source, provided traffic can be routed to it. Internally, every pod is able to communicate with any other pod in the same cluster. In today's hyper security-aware world this raises a few alarm bells. 
 
-A service should only ever receive traffic explicitly allowed to it. To translate, while your frontend web application should be able to accept connections from any source, the database or backend system behind your frontend application should only accept traffic from the frontend, for example. There usually is no reason to allow public access or unrelated services to access the database server, which is where network policies come in handy.
+Services should only ever receive traffic explicitly allowed to it. To translate, while your frontend web application should be able to accept connections from any source, the database or backend system behind your frontend application should only accept traffic from the frontend, for example. There usually is no reason to allow public access or unrelated services to access the database server, which is where network policies come in handy.
 
 In this tutorial you will learn how to craft a secure network policy for Kubernetes and apply it.
 
 ## The Basics
-The two types of policies you will be defining in your network policies are **ingress** *(incoming)* and **egress** *(outgoing)*. A Kubernetes network policy can define one of each or both togther using the `policyTypes` key, which is set in the `spec` of a the manifest.
+The two types of policies you will be defining in your network policies are **ingress** *(incoming)* and **egress** *(outgoing)*. A Kubernetes network policy can define one of each or both together using the `policyTypes` key, which is set in the `spec` of a manifest.
 
 ```yaml
 spec:
@@ -88,7 +88,7 @@ spec:
 
 ## Network Policy Manifests
 
-A Kubernetes manifest defines a desired state for a resource. For network policies a manifest defines a state for ingress (incoming) and egress (outgoing) traffic. The following is an example of a network policy manifest.
+A Kubernetes manifest defines the desired state for a resource. For network policies a manifest defines a state for ingress (incoming) and egress (outgoing) traffic. The following is an example of a network policy manifest.
 
 ```yaml
 apiVersion: v1
@@ -192,7 +192,7 @@ spec:
         cidr: 10.0.0.0/24
 ```
 
-## Wordpress to MySQL Network Policy
+## WordPress to MySQL Network Policy
 Now that we have an understanding of how to define a network policy it is time to create one for our MySQL server. The following network policy permits any traffic from the `172.17.1.0/24` network access over TCP port 3306. It also only permits egress traffic to the same network.
 
 ```yaml
@@ -223,9 +223,12 @@ spec:
 The example above is fairly loose, as it permits *any* communications from pods residing in the `172.17.1.0/24` network space. Depending on your network topology, this could be perfectly acceptable in the case where only WordPress occupies that network space.
 
 ## Selectors
-Selectors allow us to further define what type of traffic is permitted. We can can granulary permit traffic that match a particular label selector or namespace, for example.
+Selectors allow us to further define what type of traffic is permitted. We can granularly permit traffic that match a particular label selector or namespace, for example.
 
-In the network policy example above we've allowed an entire /24 network access to our database server. There is no delimination between our WordPress blog servers and any other type of service that may reside in that network space. With Selectors, we can permit only pods running WordPress access to our backend database.
+In the network policy example above we've allowed an entire /24 network access to our database server. There is no delimitation
+/dəˌliməˈtāSH(ə)n/
+Learn to pronounce
+ between our WordPress blog servers and any other type of service that may reside in that network space. With Selectors, we can permit only pods running WordPress access to our backend database.
 
 In the example below, we've limited ingress traffic only to pods with the labels `project: myblog` and `role: wordpress`. We are also using a selector to apply the network policy onto to pods with the label `role: wordpress-db`. 
 

@@ -21,7 +21,7 @@ Squashing commits is the process of rebasing your repository. There a few method
 Rebasing can be done interactively, which is to say with a temporary file loaded into your shell's default text editor. This is by and far the most recommend way of rebasing, as you can visually see exactly what you are attempting to accomplish. Rebasing will occur after the temporary file is saved. If no syntax errors are detected and the rebase completes successfully, the file will be deleted.
 
 The two most common methods of rebasing are:
-* Rebase from HEAD to a `x` number of commits behind
+* Rebase from HEAD to an `x` number of commits behind
 * Rebase from a commit ID
 
 To rebase an `x` number of commits from `HEAD`, you would use the following command syntax with git.
@@ -37,7 +37,7 @@ git rebase -i [COMMIT ID]
 The `-i` flag instructs Git to perform the rebase interactively.
 
 {{< note >}}
-Both methods above as essential identical, in that you are rebasing from one commmit ID to another. With `git rebase -i HEAD~10`, you are rebasing from `HEADS` commit ID through to the previous 9 commits.
+Both methods above as essential identical, in that you are rebasing from one commit ID to another. With `git rebase -i HEAD~10`, you are rebasing from `HEADS` commit ID through to the previous 9 commits.
 {{< /note >}}
 
 An interactive rebase will open your default text editor with contents similar to the following. All commits selected will be listed with a command (`pick`), its commit ID, and the log text.
@@ -86,7 +86,7 @@ Your `head` is the current position. To squash the ten most recent commits from 
 git rebase -i HEAD~10
 ```
 
-To squash commits replace command `pick` infront of each commit your want squashed with `squash`. 
+To squash commits replace command `pick` in front of each commit your want squashed with `squash`. 
 
 ```text
 squash cac1790 CLDY-1000: Finally!
@@ -112,7 +112,7 @@ git rebase -i 10468a4a06659311f55d2573a20437922b24c912
 ```
 
 ## Rebase Fixup Commits
-Squashing and fixup are very similar methods of combining commits. The difference is when a fixup is selected the log text for each commit is not retained. This is more useful when you have extraneuous commits due to troubleshooting, for example. It's unlikely you will want or need to retain these message.
+Squashing and fixup are very similar methods of combining commits. The difference is when a fixup is selected the log text for each commit is not retained. This is more useful when you have extraneous commits due to troubleshooting, for example. It's unlikely you will want or need to retain these messages.
 
 ```text
 fixup cac1790 CLDY-1000: Finally!

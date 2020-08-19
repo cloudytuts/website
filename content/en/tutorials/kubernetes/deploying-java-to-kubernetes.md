@@ -11,16 +11,7 @@ tags:
   - docker
 date: "2020-06-30"
 description: Learn how to containerize your React applications and deploy them into Kubernetes.
-abstract: |
-    Learn how to containerize your React applications and deploy them into Kubernetes.|
 author: serainville
-contributors:
-    - "Bob Martin"
-    - bgates
-menu:
-  learning:
-    kubernetes:
-      title: Deploying Java to Kubernetes
 ---
 
 Containerization has seen exponential growth in popular since the advent of Docker. However, it wasn't long before people identified the challenges with orchestrating a containerized environment. While a number of solutions were developed, Kubernetes became king.
@@ -62,7 +53,7 @@ COPY --from=build ./output/myapp.js /var/www/html
 The example code snippet above does not define a `USER` action, when means the container will run with root privileges, therefore, it is an insecure image. [Setting a user]({{< relref path="tutorials/_index.md">}})
 {{< /warning >}}
 
-By using multistage builds we eliminate the need for placing our source files in the final image, which in most scenerios would be a security concern. Two stages are used in our build, and by doing so we separate our areas of concern. Our first stage compiles the project's static files, and the second stage generates the final image.
+By using multistage builds we eliminate the need for placing our source files in the final image, which in most scenarios would be a security concern. Two stages are used in our build, and by doing so we separate our areas of concern. Our first stage compiles the project's static files, and the second stage generates the final image.
 
 To build the project
 
@@ -138,7 +129,7 @@ The spec defines what container to deploy and how it will be deployed. It is her
 ## ConfigMaps
 Application configurations can differ from one environment to another. If all configurations were to be hard-coded into your application you would lose the ability of being portable; a single image of your application could not be deployed into any environment as environment specific images would be required. 
 
-Kubernetes provides ConfigMaps, which is a key-value pair manifest for storing your applications configurations. 
+Kubernetes provides ConfigMaps, which is a key-value pair manifest for storing your applications' configurations. 
 
 ```yaml
 apiVersion: v1
@@ -200,7 +191,7 @@ Protecting sensitive information is crucial to an application's security. Kubern
 
 Kubernetes does not provide secrets lifecycle management, meaning out of the box you will be responsible for rotating secrets and ensuring pods have the updated information.
 
-Aside from being encrpted, secrets are identical to ConfigMaps. They can be key-value pairs or files that can be read as environment variables or mounted as files.
+Aside from being encrypted, secrets are identical to ConfigMaps. They can be key-value pairs or files that can be read as environment variables or mounted as files.
 
 ```yaml
 apiVersion: v1

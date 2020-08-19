@@ -8,7 +8,7 @@ description: |
     Learn how to securely store your sensitive information in Kubernetes secrets and access those secrets in your manifests.
 ---
 
-Secrets are any sensitive information used by applications and services. Nearly all applications use sensitive configuration information, from database credentials to TLS\SSL certificates. For obvious security reasons it is a good practive to keep your code separate from your secrets.
+Secrets are any sensitive information used by applications and services. Nearly all applications use sensitive configuration information, from database credentials to TLS\SSL certificates. For obvious security reasons, it is a good proactive to keep your code separate from your secrets.
 
 Kubernetes Secrets allow us to store our sensitive information separately from our resources that use it. In this tutorial, you will learn how to create secrets in Kubernetes, and also how to use those secrets in your other resources, such as pods and deployments.
 
@@ -35,7 +35,7 @@ Alternatively, secrets can be imported from a properties file. The syntax for cr
 kubectl create secret generic example-secrets --from-file=<filepath>
 ```
 
-For example, a properties file named `db-credentials.txt` has bas the following content.
+For example, a properties file named `DB-credentials.txt` has bas the following content.
 
 ```text
 db.password=super-secret-password

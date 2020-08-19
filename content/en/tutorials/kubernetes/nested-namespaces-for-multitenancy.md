@@ -9,12 +9,12 @@ description: |
     Learn how to implement nested namespaces in Kubernetes using the new Hierarchical Namespaces resource type, and move away from two-dimensional resource organization.
 ---
 
-Namespaces are way of organizing resources into common groups. The limitation up until now has been the flat, two-dimensional hierarchy of namespaces. 
+Namespaces are a way of organizing resources into common groups. The limitation up until now has been the flat, two-dimensional hierarchy of namespaces. 
 
 Unfortunately, at the time of writing this tutorial, hierarchical namespaces are not a built-in feature of Kubernetes or kubectl. Instead, it is available as an extension to be installed on your cluster, which an accompanying plugin for kubectl.
 
 ## Install Hierarchical Namespaces
-Hierarchical namespaces requires a new controller to be installed on your cluster(s). The controller yaml is available from the [multi-tenancy](https://github.com/kubernetes-sigs/multi-tenancy/releases) repository of Kubernetes' [kubernetes-sigs](https://github.com/kubernetes-sigs) project.
+Hierarchical namespaces requires a new controller to be installed on your cluster(s). The controller YAML is available from the [multi-tenancy](https://github.com/kubernetes-sigs/multi-tenancy/releases) repository of Kubernetes' [kubernetes-sigs](https://github.com/kubernetes-sigs) project.
 
 ### Controller
 ```shell
