@@ -165,12 +165,12 @@ spec:
     env:
       - name: PLAYER_INITIAL_LIVES
         valueFrom:
-          configMapRefKey:
+          configMapKeyRef:
             name: game-demo
             key: player_initial_lives
       - name: UI_PROPERTIES_FILE_NAME
         valueFrom:
-          configMapRefKey:
+          configMapKeyRef:
             name: game-demo
             key: ui_properties_file_name
 ```     
@@ -180,12 +180,77 @@ Protecting sensitive information is crucial to an application's security. Kubern
 
 Kubernetes does not provide secrets lifecycle management, meaning out of the box you will be responsible for rotating secrets and ensuring pods have the updated information.
 
-Aside from being encrpted, secrets are identical to ConfigMaps. They can be key-value pairs or files that can be read as environment variables or mounted as files.
+Aside from being encrypted, secrets are identical to ConfigMaps. They can be key-value pairs or files that can be read as environment variables or mounted as files.
+
+### Creating Secrets Manifest
+Create a new YAML file with the following structure. Your sensitive information will be stored under the `data` key, using a unique parameter name. 
+
+{{ note }}
+When using the `data` key, secrets must be ***base64*** encoded.
+{{ /note }}
 
 ```yaml
 apiVersion: v1
 kind: Secret
+metadata:
+  name: game-demo-secrets
+data:
+  db.user: ZGVtb2FwcF91c2Vy
+  db.password: bXktc3VwZXItc2VjcmV0LXBhc3N3b3Jk
 ```
+
+The values for `db.user` and `db.password` are base64 encoded. You can easily base64 encode a string on OSX and Linux using the base64 command.
+
+```shell
+echo -n 'super-secret-password' | base64
+```
+
+To apply the new secrets file, use the `kubectl apply` command.
+
+```shell
+kubectl apply -f demo-app-secrets.yaml
+```
+
+### Secrets as Environment Variables
+With the secrets securely stored in Kubernetes you can now access them from a `pod` or `deployment`, for example. In our demonstration we will be accessing them for our React deployment.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: reactui-app
+spec:
+  containers:
+  - name: ui
+    image: cloudytuts.com/reactui-demo
+    env:
+      - name: PLAYER_INITIAL_LIVES
+        valueFrom:
+          configMapKeyRef:
+            name: game-demo
+            key: player_initial_lives
+      - name: UI_PROPERTIES_FILE_NAME
+        valueFrom:
+          configMapKeyRef:
+            name: game-demo
+            key: ui_properties_file_name
+      - name: DB_USER
+        valueFrom:
+          secretKeyRef:
+            name: game-demo-secrets
+            key: db.user
+      - name: DB_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: game-demo-secrets
+            key: db.password
+
+```
+
+We have combined both  `configMaps` and  `secrets` in our deployment. Our non-sensitive information is sourced from a configMap while the sensitive information from a secret.
+
+## Accessing ConfigMap and Secrets
+Both the ConfigMap data and the Secrets data are available as environment variables. Within your React application you will need to pull in the environment variables in order to use them. The variable names are the the `env` `name` values. For example, the database user enviroment is accessed using the `DB_USER` environment variable.
 
 ## Further Reading
 
