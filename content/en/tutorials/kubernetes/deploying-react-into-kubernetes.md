@@ -33,13 +33,14 @@ As with all NPM based projects, your project will need to be transpiled prior to
 The following Dockerfile example shows two stages. (1) the build stage transpiles (compiles) the source files and outputs your final static JavaScript file, (2) the final stage copies your newly generated static files to an Nginx-based image. 
 
 ```dockerfile
+# Build stage with all source files, dependancies, and necessary build tools
 FROM node as build
 COPY ./src .
-RUN npm build
+RUN npm run-script build
 
-FROM nginx as final
-COPY --from=build ./output/index.html /var/www/html
-COPY --from=build ./output/myapp.js /var/www/html
+# Clean, light-weight final image with only build artifacts
+FROM nginx:1.17 as final
+COPY --from=build build /usr/share/nginx/html
 ```
 
 {{< warning >}}
@@ -48,11 +49,18 @@ The example code snippet above does not define a `USER` action. By default a con
 
 By using multistage builds we eliminate the need for placing our source files in the final image, which in most scenerios would be a security concern. Two stages are used in our build, and by doing so we separate our areas of concern. Our first stage compiles the project's static files, and the second stage generates the final image.
 
-To build the project
+The command below builds the Docker image based on our `Dockerfile`. The `-t` flag tags the image with the Docker repository name and our app's name. It also includes a version to easily identify the build.
 
 ```shell
   docker build -t my.docker.repo/myapp:v0.1.0 .
 ```
+
+If you are using a remote Docker repistory, you will need to push your newly created image to it.
+
+```shell
+docker push my.docker.repo/myapp:v0.1.0
+```
+
 
 ## Kubernetes Deployment Manifest
 A Kubernetes deployment defines how an application will be deployed. Like all things Kubernetes, a manifest is typically a YAML file. 
@@ -120,17 +128,10 @@ Kubernetes provides ConfigMaps, which is a key-value pair manifest for storing y
 apiVersion: v1
 kind: ConfigMap
 metadata:
-    name: reactui-config
+    name: reactui-app
 data:
-    player_lives: 3
-    ui_properties: "user-interface.properties"
-    game.properties: |
-        enemy.types=aliens,monsters
-        player.maximum-lives=5
-    user-interface.properties: |
-        color.good=purple
-        color.bad=yellow
-        allow.textmode=true
+    api.server: https://api.server:3000
+    cards.screen: 10
 ```
 
 Create a new file in the project directory named `.env`. The *.env* file, or environment file, allows you to set parameters specific for an environment. With Kubernetes, we can store the env file as a configMap. 
@@ -138,14 +139,57 @@ Create a new file in the project directory named `.env`. The *.env* file, or env
 Create a new file named `.env` and add any parameters required for your environment.
 
 ```text
-player.lives=5
+api.server=https://api.server:3000
 ```
 
 The file can then be stored in Kubernetes as a configMap. 
 
 ```shell
-kubectl create configmap
+kubectl create configmap reactui --from-file=.env
 ```
+  | Output
+```shell
+configmap/reactui created
+```
+
+Using the `kubectl get secrets` command we can see the state of our newly created configMap resource in Kubernetes. The output has three columns: `NAME`, `DATA`, and `AGE`. 
+
+```shell
+kubectl get configmap
+```
+  | Output
+```shell
+NAME               DATA   AGE
+reactui            1      99s
+```
+
+A brief description of each column:
+* The `NAME` column is the name we've given our configmap.
+* The `DATA` column is the number of parameters, or keys in the configmap. We've only created a single parameter: `api.server`.
+* The `AGE` column shows how long the resource has existed.
+
+We can view much more inforamtion about our configMap using the `kubectl describe configmap` command. 
+
+```shell
+kubectl describe configmap reactui
+```
+  | Output
+```shell
+Name:         reactui
+Namespace:    default
+Labels:       <none>
+Annotations:  <none>
+
+Data
+====
+.env:
+----
+api.server=https://api.server:3000
+```
+
+
+
+
 
 Mounting ConfigMaps into your Pod
 
@@ -159,20 +203,22 @@ spec:
   - name: ui
     image: cloudytuts.com/reactui-demo
     env:
-      - name: PLAYER_INITIAL_LIVES
+      - name: API_SERVER
         valueFrom:
           configMapKeyRef:
-            name: game-demo
-            key: player_initial_lives
-      - name: UI_PROPERTIES_FILE_NAME
+            name: reactui-app
+            key: api.server
+      - name: CARDS_PER_SCREEN
         valueFrom:
           configMapKeyRef:
-            name: game-demo
-            key: ui_properties_file_name
+            name: reactui-app
+            key: cards.screen
 ```     
             
 ## Secrets
 Protecting sensitive information is crucial to an application's security. Kubernetes provides Secrets as a means to store sensitive information in the cluster. The data is encrypted at rest as a base64 encoded string.
+
+React applications typically use api keys to interact with backend services and third-party services. API keys are a good example of a secret, as it is usually not desirable for it to be exposed to the public. Rather than commiting your API key in your source code, creating a potential security risk, use a Kubernetes secret and pull it into your React application as an environment variable.
 
 Kubernetes does not provide secrets lifecycle management, meaning out of the box you will be responsible for rotating secrets and ensuring pods have the updated information.
 
@@ -191,14 +237,13 @@ kind: Secret
 metadata:
   name: game-demo-secrets
 data:
-  db.user: ZGVtb2FwcF91c2Vy
-  db.password: bXktc3VwZXItc2VjcmV0LXBhc3N3b3Jk
+  api.key: bXktc3VwZXItc2VjcmV0LWFwaS1rZXk=
 ```
 
-The values for `db.user` and `db.password` are base64 encoded. You can easily base64 encode a string on OSX and Linux using the base64 command.
+The value for `api.key` id base64 encoded. You can easily base64 encode a string on OSX and Linux using the base64 command.
 
 ```shell
-echo -n 'super-secret-password' | base64
+echo -n 'my-super-secret-api-key' | base64
 ```
 
 To apply the new secrets file, use the `kubectl apply` command.
@@ -220,33 +265,40 @@ spec:
   - name: ui
     image: cloudytuts.com/reactui-demo
     env:
-      - name: PLAYER_INITIAL_LIVES
+      - name: API_SERVER
         valueFrom:
           configMapKeyRef:
-            name: game-demo
-            key: player_initial_lives
-      - name: UI_PROPERTIES_FILE_NAME
+            name: reactui-app
+            key: api.server
+      - name: CARDS_PER_SCREEN
         valueFrom:
           configMapKeyRef:
-            name: game-demo
-            key: ui_properties_file_name
-      - name: DB_USER
+            name: reactui-app
+            key: cards.screen
+      - name: API_KEY
         valueFrom:
           secretKeyRef:
-            name: game-demo-secrets
-            key: db.user
-      - name: DB_PASSWORD
-        valueFrom:
-          secretKeyRef:
-            name: game-demo-secrets
-            key: db.password
+            name: reactui-secrets
+            key: api.key          
 
 ```
 
 We have combined both  `configMaps` and  `secrets` in our deployment. Our non-sensitive information is sourced from a configMap while the sensitive information from a secret.
 
-## Accessing ConfigMap and Secrets
-Both the ConfigMap data and the Secrets data are available as environment variables. Within your React application you will need to pull in the environment variables in order to use them. The variable names are the the `env` `name` values. For example, the database user enviroment is accessed using the `DB_USER` environment variable.
+## Accessing ConfigMap and Secrets in React
+Both the ConfigMap data and the Secrets data are available as environment variables. Within your React application you will need to pull in the environment variables in order to use them. 
+
+Pulling environment variables into your React application is done using `process.env.VARIABLE_NAME`. In the example code snippet below, we are limiting the number of cards display on a screen using the `CARDS_PER_SCREEN` environment variable, set in our configMap as `cards.screen`
+
+```javascript
+render() {
+  return (
+    <div>
+      <cards limit={process.env.CARDS_PER_SCREEN} />
+    </div>
+  );
+}
+```
 
 ## Exposing React in Kubernetes
 The final step for your React app is to expose through a Kubernetes service. While you could expose a pod directly to traffic, the lifecycle of pods is typically very short. A service, on the hand, has a much longer, almost permanent lifecycle. 
