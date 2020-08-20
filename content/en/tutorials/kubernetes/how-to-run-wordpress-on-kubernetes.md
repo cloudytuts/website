@@ -380,6 +380,39 @@ kubectl apply -f wordpress-ingress.yaml
 ```
 
 ## Network Policy
+Our MySQL instance should not be able to accept connections to it, unless explicitly allowed. The only application that should have network access to the MySQL instance is our WordPress blog. The following `NetworkPolicy` permits access from our `wordpress` pods to the `mysql` pod over TCP port 3306.
+
+Create a new file named `mysql-network-policy.yaml` and add the following contents to it.
+
+```yaml
+apiVersion: v1
+kind: NetworkPolicy
+metadata:
+  name: mysql
+spec:
+  podSelector:
+    matchLabels:
+      role: db
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - ipBlock:
+      cidr: 172.17.0.0/16
+    - podSelector:
+        matchLabels:
+          role: frontend
+    ports:
+    - protocol: TCP
+      port: 3306
+```
+
+Apply the manifest to create the `NetworkPolicy`.
+
+```shell
+kubectl apply -f mysql-network-policy.yaml
+```
+
 
 ## Backups
 ### MySQL to Google Cloud Storage
