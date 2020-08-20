@@ -31,12 +31,12 @@ We welcome contributions from other authors to help us build our library.
 To be an author on CloudyTuts you must:
 * Add your author profile.
 * Add a profile image to `/static/images/authors` using Git LFS.
-    * Images must be no less than 250x250 pixels.
-    * Image files must be less than 20KB.
+    * Images must be no less than 125x125 pixels and no more than 250x250 pixels.
+    * Image files must be less than or equal to 20KB.
 * Submit at least one news item, guide, or tutorial.
 
 ### Author Profile
-Authors are defined as YAML files under `/data/_authors`. 
+Authors are defined as YAML files under `/data/_authors`.  The file name of your author profile will be used as the `author` key in your content. For example, the following file example is named `serainville.yaml`, therefore, all submissions by `Shane Rainville` will have `author: serainville` in the front matter.
 
 ```yaml
 name: Shane Rainville
