@@ -1,5 +1,5 @@
 ---
-title: "How to Run WordPress on Kubernetes"
+title: "How to Run WordPress and MySQL on Kubernetes"
 date: 2020-08-19T22:18:46-04:00
 draft: false
 author: serainville
