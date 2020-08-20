@@ -380,12 +380,34 @@ kubectl apply -f wordpress-ingress.yaml
 ```
 
 ## Network Policy
+### WordPress
+The only port traffic should ever reach our WordPress server is through TCP port 80. Let's write a network policy to enforce this as a rule.
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: wordpress-ingress
+spec:
+  podSelector:
+    matchLabels:
+      role: frontend
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    ports:
+    - protocol: TCP
+      port: 80
+```
+
+### MySQL
 Our MySQL instance should not be able to accept connections to it, unless explicitly allowed. The only application that should have network access to the MySQL instance is our WordPress blog. The following `NetworkPolicy` permits access from our `wordpress` pods to the `mysql` pod over TCP port 3306.
 
 Create a new file named `mysql-network-policy.yaml` and add the following contents to it.
 
 ```yaml
-apiVersion: v1
+apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: mysql
