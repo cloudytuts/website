@@ -10,6 +10,7 @@ tags:
     - mysql
 description: |
     Learn how to run WordPress and MySQL on Kubernetes in production with persistent storage, network policies, configmaps, secrets, and regular backups.
+repo: https://github.com/cloudytuts/kubernetes-in-action
 ---
 
 WordPress continues to be the most popular content management system used by the internet. It continues to evolve with the internet and will remain a popular choice for many more years.
