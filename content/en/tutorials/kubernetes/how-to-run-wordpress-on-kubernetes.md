@@ -56,7 +56,7 @@ Create a new YAML filed named `wordpress-pvc.yaml` with the following contents.
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: wp-pv-claim
+  name: mysql-pv-claim
   labels:
     app: wordpress
 spec:
@@ -64,7 +64,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 10Gi
+      storage: 1Gi
 ```
 
 To create the `PersistentVolumeClaim` we must apply our manifest against our Kubernetes cluster using `kubectl`.
@@ -183,8 +183,73 @@ spec:
 
 ## Deploying WordPress
 ### ConfigMap
+The `ConfigMap` for our WordPress instance needs to define a few parameters for connecting to a backend database. In the example below, we are defining values for the database host, database name, and prefix to be used by WordPress for the database tables.
+
+{{< note >}}
+Sensitive information such as database credentials should not be added to a `ConfigMap`. Secrets should be stored in `Secret` resources.
+{{< /note >}}
+
+Create a new manifest file named `wordpress-configmap.yaml` and add the following to it.
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wordpress
+data:
+  db.host: wordpress-mysql
+  db.name: myblog
+  db.prefix: mb_
+```
+
+Create the `ConfigMap` by applying the manifest.
+```shell
+kubectl apply -f wordpress-configmap.yaml
+```
+
 ### Secrets
+The `ConfigMap` above covered less sensitive information. Two key parameters missing from the `ConfigMap` are the database username and password. These two values are very sensitive and should be stored as secrets. Unlike `ConfigMap` resources, secrets are stored encrypted on disk in the etcd database.
+
+Create a new manifest file named `wordpress-secrets.yaml` and add the following contents. The value for `db.password` is a base64 encoded string. Keys under the `Data` key must be base64 encoded, which can be done using the `base64` command on Linux and OSX. Values under the `stringData` key do not need to be base64 encoded.
+
+{{< note >}}
+Base64 does not encrypt data, it encodes it. By using encoded strings to represent data we prevent data leaks from people looking over our shoulders. Because it is not encrypted, it is trivial to decode a base64 string.
+{{< /note >}}
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: wordpress
+data:
+    db.password: a3NLa2Qwd1N5VUlMb01Id0NXOHhkVTVQUEtaTkZ5YnA=
+stringData:
+    db.user: wordpress-user
+```
+
+Apply the manifest to create the secret resource.
+```shell
+kubectl apply -f wordpress-secrets.yaml
+```
+
 ### Persistent Storage
+WordPress will need enough storage to store our installed theme, plugins, and any upload content. In the example `PersistentVolumeClaim` below will create a 10GB volume.
+
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: wp-pv-claim
+  labels:
+    app: wordpress
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+```
+
 ### Deployment
 
 ```yaml
@@ -215,7 +280,7 @@ spec:
                   env:
                   - name: WORDPRESS_DB_HOST
                     valueFrom:
-                      secretKeyRef:
+                      configMapKeyRef:
                          name: wordpress
                          key: db.host
                   - name: WORDPRESS_DB_USER
@@ -230,12 +295,12 @@ spec:
                         key: db.password
                   - name: WORDPRESS_DB_NAME
                     valueFrom:
-                      secretKeyRef:
+                      configMapKeyRef:
                         name: wordpress
                         key: db.name
                   - name: WORDPRESS_TABLE_PREFIX
                     valueFrom:
-                      secretKeyRef:
+                      configMapKeyRef:
                         name: wordpress
                         key: db.prefix
             volumes:
@@ -245,6 +310,10 @@ spec:
 ```
 
 ### Service
+Exposing pods directly to public traffic is possible but strongly discouraged. A pod are not expected to be stable and typically have relatively short lifespans. A service, on the other hand, is expected to be fairly static. Therefore, a service should be exposed through a Kubernetes service, rather than directly from a pod.
+
+The following service example creates a service for our WordPress site and exposes it over TCP port 80. Create a file named `wordpress-service.yaml` and add the following contents to it.
+
 ```yaml
 apiVersion: v1
 kind: Service
@@ -258,9 +327,30 @@ spec:
           port: 80
 ```
 
+Create the service resource by applying the YAML manifest.
+
+```shell
+kubectl apply -f wordpress-service.yaml
+```
+
 ### Ingress Controller
+An Ingress controller handles traffic to web services running your Kubernetes cluster. It is essentially a reverse-proxy serve that receives HTTP and HTTPS traffic, and then routes it to backend services based on ingress rules, which are covered by `ingress` manifests (see below).
+
+The most common Ingress controller is NGINX, with Traefik growing in popularity. You will need to understand the strengths and weaknesses of both before determining which one to us. The default ingress controller is NGINX, and it is the simplist to deploy.
+
+Download and apply the NGINX IngressController
+```shell
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.34.1/deploy/static/provider/cloud/deploy.yaml
+```
+
+When the Ingress Controller is created it will request a load balancer from your cloud provider. Check your providor's pricing to understand what the extra costs our.
+
 
 ### Ingress
+An ingress resource is used in concert with an Ingress Controller. It defines the hostnames and paths the ingress controller should route web traffic. Each host maps to a Kuberntes service and the service's port.
+
+The following ingress manifest configures two hosts: www.myblog.com and myblog.com. Both route to our backend `wordpress` service on port 80.
+
 ```yaml
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -283,9 +373,28 @@ spec:
           servicePort: 80
 ```
 
+Create the ingress resource by applying your manifest.
+
+```shell
+kubectl apply -f wordpress-ingress.yaml
+```
+
 ## Network Policy
 
 ## Backups
+### MySQL to Google Cloud Storage
+It is important to regularly backup your WordPress database. To accomplish this task in an automated way we are going to introduce a new `CronJob`. 
+
+The following example isn't the most elequent way of running a CronJob, but it effective in showing how a container can be used to perform actions. 
+
+The CronJob below runs an Ubuntu container. When the the container is executed it will perform a number of actions, defined in an array of `args`. Our actions install Google's cloud-sdk to copy our backups to cloud storage, and MySQL Client to connect with our database server and backup our WordPress database.
+
+{{< note >}}
+Our example CronJob uses a Ubuntu distribution image and performs a number of task to install dependencies. While this may not be an issue for a cronjob that runs daily or monthly, a purpose-built image could be created with all of the dependent packages already installed.
+{{< /note >}}
+
+Create a new file named `wordpress-mysql-backup.yaml` with the following contents.
+
 ```yaml
 apiVersion: batch/v1beta1
 kind: CronJob
@@ -302,7 +411,10 @@ spec:
             image: ubuntu:latest
             imagePullPolicy: IfNotPresent
             args:
-              - apt-get install -y mysql-client gcloud
+              - echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+              - sudo apt-get install apt-transport-https ca-certificates gnupg
+              - curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
+              - sudo apt-get update && sudo apt-get install -y mysql-client google-cloud-sdk 
               - mysql -h ${DB_HOST} -u ${DB_USER} -p${DB_PASSWORD} ${DB_NAME} > ${DB_NAME}.backup.sql
               - gcloud auth activate-service-account --key-file credentials.json
               - gsutil cp *.sql gs:/my-bucket
@@ -324,3 +436,10 @@ spec:
                   key: db.name
           restartPolicy: OnFailure
 ```
+
+Create the `CronJob` by applying the manifest against your cluster.
+
+```shell
+kubectl apply -f wordpress-mysql-backup.yaml
+```
+
