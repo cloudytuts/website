@@ -208,29 +208,7 @@ kubectl apply -f wordpress-configmap.yaml
 ```
 
 ### Secrets
-The `ConfigMap` above covered less sensitive information. Two key parameters missing from the `ConfigMap` are the database username and password. These two values are very sensitive and should be stored as secrets. Unlike `ConfigMap` resources, secrets are stored encrypted on disk in the etcd database.
-
-Create a new manifest file named `wordpress-secrets.yaml` and add the following contents. The value for `db.password` is a base64 encoded string. Keys under the `Data` key must be base64 encoded, which can be done using the `base64` command on Linux and OSX. Values under the `stringData` key do not need to be base64 encoded.
-
-{{< note >}}
-Base64 does not encrypt data, it encodes it. By using encoded strings to represent data we prevent data leaks from people looking over our shoulders. Because it is not encrypted, it is trivial to decode a base64 string.
-{{< /note >}}
-
-```yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: wordpress
-data:
-    db.password: a3NLa2Qwd1N5VUlMb01Id0NXOHhkVTVQUEtaTkZ5YnA=
-stringData:
-    db.user: wordpress-user
-```
-
-Apply the manifest to create the secret resource.
-```shell
-kubectl apply -f wordpress-secrets.yaml
-```
+The database user and password have already been defined in our `mysql-secret` secret resource above. We will pull these values in from the existing resource rather than define two secret resources.
 
 ### Persistent Storage
 WordPress will need enough storage to store our installed theme, plugins, and any upload content. In the example `PersistentVolumeClaim` below will create a 10GB volume.
@@ -286,12 +264,12 @@ spec:
                   - name: WORDPRESS_DB_USER
                     valueFrom:
                       secretKeyRef:
-                        name: wordpress
+                        name: wordpress-mysql
                         key: db.user
                   - name: WORDPRESS_DB_PASSWORD
                     valueFrom:
                       secretKeyRef:
-                        name: wordpress
+                        name: wordpress-mysql
                         key: db.password
                   - name: WORDPRESS_DB_NAME
                     valueFrom:
@@ -420,7 +398,7 @@ spec:
   ingress:
   - from:
     - ipBlock:
-      cidr: 172.17.0.0/16
+        cidr: 172.17.0.0/16
     - podSelector:
         matchLabels:
           role: frontend
