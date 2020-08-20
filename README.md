@@ -6,20 +6,23 @@ CloudyTuts is an open source website for news, guides, and tutorials for all thi
 # Contributions
 
 ## As a User
-Regular users of CloudyTuts can help us improve the quality of our content and their user experience. As a user you can contribute in the following ways:
+Regular users of CloudyTuts can help us improve the quality of our content and their user experience. As a contributing user your name will be added to the content you contributed to as a **contributor**.
+
+Users can contribute in the following ways:
 
 * Report issues found in our content:
     * Typos
     * Missing instructions
-    * Bad instructions
+    * Errors in instructions
 
 * Submit corrections to our content:
     * Typos
     * Improved clarity
+    * Add additional content
 
 You will need a Github account to contribute as a user. Issues should be logged under the this project's **Issues**.
 
-To submit updates to existing content you will need to fork this repository, makes your modifications, and then create a pull request.
+To submit updates to existing content you will need to fork this repository, make your modifications, and then create a pull request.
 
 ## As an Author
 We welcome contributions from other authors to help us build our library. 
@@ -29,7 +32,7 @@ To be an author on CloudyTuts you must:
 * Add your author profile.
 * Add a profile image to `/static/images/authors` using Git LFS.
     * Images must be no less than 250x250 pixels.
-    * Image files must be less than 20kb
+    * Image files must be less than 20KB.
 * Submit at least one news item, guide, or tutorial.
 
 ### Author Profile
@@ -52,8 +55,11 @@ social:
 The required fields for an author are: `name`, `image`, `role`, and `bio`.
 Social fields are optional and can be of any kind `twitter`, `github`, `youtube`, `facebook`, and 'website'.
 
-### Reviews
+### Submission Reviewal
 All author submissions will be reviewed for quality purposes. To be approved, submissions must match the following criteria:
 * Well written
-* At least 300 words
-* Unique to CloudyTuts (no duplicate content from other websites)
+* Minimum words
+  - 300 words for news
+  - 300 words for tutorials
+  - 1200 words for guides
+* Unique to CloudyTuts (no copy-pasted content from other websites)
