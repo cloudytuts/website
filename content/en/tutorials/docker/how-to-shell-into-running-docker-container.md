@@ -5,6 +5,10 @@ draft: false
 author: serainville
 tags:
   - docker
+  - alpine
+  - ubuntu
+  - debian
+  - redhat
 description: |
     Learn how to load an interactive shell inside of a running Docker container based on Alpine, Debian, or Ubuntu in order to perform operational tasks.
 ---
