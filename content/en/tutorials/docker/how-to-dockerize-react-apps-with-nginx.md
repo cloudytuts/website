@@ -1,7 +1,7 @@
 ---
 title: "How to Dockerize React Apps With NGINX"
 date: 2020-08-20T21:33:32-04:00
-draft: false
+draft: true
 author: serainville
 tags:
     - docker

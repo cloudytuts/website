@@ -1,7 +1,7 @@
 ---
 title: "How to Run AngularJS on Kubernetes"
 date: 2020-08-21T15:58:25-04:00
-draft: false
+draft: true
 author: serainville
 tags:
     - kubernetes
