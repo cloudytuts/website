@@ -8,6 +8,7 @@ tags:
     - mongodb
 description: |
     Learn how to deploy and run highly available MongoDB Kubernetes services by utilizing deployments, secrets, configMaps, and persistent volumes. 
+repo: https://github.com/cloudytuts/kubernetes-in-action/tree/master/mongodb/basic-example
 ---
 
 MongoDB is an opensource NOSQL document database server popular with Node projects. 
@@ -244,4 +245,30 @@ spec:
 Apply your deployment manifest to update an existing deployment or to create one.
 ```yaml
 kubectl apply -f mongodb-deployment.yaml
+```
+
+## Exposing Service
+So far we've deployed a single Pod of a MongoDB instance. While this single pod can be exposed as a service it is strongly discouraged, outside of testing and development. Pods are ephemeral and once they stop their state is lost, which includes the assigned IP address. 
+
+### Internal Service
+An internal service is a service the is only accessible from within the Kubernetes cluster. This is the default behavoir of a service. For database server and other backend systems this is the most likely service configuration.
+
+Create a new service for the MongoDB instance.
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb
+spec:
+  selector:
+    app: mongodb
+  ports:
+  - protocol: TCP
+    port: 27017
+```
+  
+Apply the manifest to the Kubernetes cluster to create the service resource.
+```shell
+kubectl apply -f mongodb-service.yaml
 ```
