@@ -68,3 +68,28 @@ stringData:
   DB_USER: "demo-app1"
 ```
 
+## Base64 Encoding Files
+The base64 command on OSX and Linux is capable of more than just encoding strings. We can also encode the contents of an entire file, which is useful when we need to encode a configuration file or a certificate for a Kubernetes service.
+
+Files are encoded using the `--input` flag with `base64`.
+
+```shell
+base64 --input cert.pem
+```
+
+## Decode Base64 Encodings
+So far we've discussed base64 encoding your strings, but there are times when we need to do the reverse. You may need to decode a base64 string just to verify it was encoded correctly.
+
+The base64 command has a `--decode` flag that will decode a given string.
+
+```shell
+echo -n 'c3VwZXItc2VjcmV0LXBhc3N3b3Jk' | base64 --decode
+```
+
+If you are decoding a file you can set the `-o <output-file>` flag. This is more useful when we are decoding a value that is known to be a file, such as a PEM file.
+
+```shell
+echo -n 'yBQYWdlIENvbnRlbnQgVHlwZXMKQ2xvdWR5VHV0cyBwb3N0cyBmb2xsb3dzIHNldmVyYWwgdHlwZXMgb2YgcGFnZSBjb250ZW50LgoqIFR1dG9yaWFscwoqIEd1aWRlcwoqIE5ld3MKKiBBdXRob3JzCgpUaGUgaW50ZW50aW9uIG9mIHRoaXMgZ3VpZGUgaXMgdG8gaGVscCBuZXcgY29udHJpYnV0b3JzIHN1Ym1pdCBuZXcgY29udGVudCB0aGF0IG1hdGNoZXMgQ2xvdWR5VHV0cyBleHBlY3RhdGlvbnMuCgojIyBUdXRvcmlhbHMKQSB0dXRvcmlhbCBpcyBhIHBvc3Qgd2l0aCBhIGxpbWl0ZWQgc2NvcGUgdGh' | base64 --decode -o test.md
+```
+
+
