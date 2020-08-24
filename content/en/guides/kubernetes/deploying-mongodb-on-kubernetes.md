@@ -11,7 +11,8 @@ description: |
 repo: https://github.com/cloudytuts/kubernetes-in-action/tree/master/mongodb/basic-example
 ---
 
-MongoDB is an opensource NOSQL document database server popular with Node projects. 
+MongoDB is an opensource, general purpose, document-based, distributed NOSQL database server that is especially popular with JavaScript projects. In this guide you will learn how to deploy and run MongoDB as a container in Kubernetes. 
+
 
 ## Objectives
 * Learn how to store MongoDB credentials securely with Kubernetes Secrets.
@@ -26,13 +27,19 @@ Unfortunately, there is no official Docker image for MongoDB available. A Docker
 Dockerfiles and build scripts can be found in the [MongoDB Docker Community image](https://github.com/docker-library/mongo) repository.
 
 
-## MongoDB Configurations
+## MongoDB Docker Configurations
 
 The Docker Community MongoDB image provides a few environment variables used to configure the database server. 
 
 * `MONGO_INITDB_ROOT_USERNAME`
 * `MONGO_INITDB_ROOT_PASSWORD`
 * `MONGO_INITDB_DATABASE`
+
+The first two are used to set the root username and password for administering a MongoDB server. With MongoDB in general and the Docker Community image, these two values should be set. 
+
+{{< warning >}}
+If `MONGO_INITDB_ROOT_USERNAME` and `MONGO_INITDB_ROOT_PASSWORD` are not set Mongo will default to passwordless authentication. Anyone who connects to your instance will have full root access.
+{{< /warning >}}
 
 ### Secrets
 Secrets provide a means to safely store sensitive information in Kubernetes. Data stored as a secret is base64 encoded, to obscure the values when displayed on screen, and is stored encrypted on the ETCD database server used by Kubernetes. 
@@ -64,7 +71,7 @@ echo -n 'my-super-secret-password' | base64
 bXktc3VwZXItc2VjcmV0LXBhc3N3b3Jk
 ```
 
-Create a new file named `mongodb-secrets.yaml` and add the following contents. All data values under the `data` key must be base64 encoded. Values stored under the optional `stringData` key do not require being base64 encoded.
+Create a new file named `mongodb-secrets.yaml` and add the following contents. Secrets can be stored as `data` or `stringData` in the Secret manifest. All data values under the `data` key must be base64 encoded. Values stored under the optional `stringData` key do not require being base64 encoded.
 
 ```yaml
 apiVersion: v1
@@ -84,6 +91,13 @@ kubectl apply -f mongodb-secrets.yaml
 ```
 
 ### MongoDB Deployment Manifest
+A deployment describes a desired state to be enforced by the Deployment Controller. When the state of a deployment shifts away from the desired state, the Deployment Controller will perform actions to bring the state back. 
+
+One example of maintaining state is ensuring a set number of replica Pods is running. If a Deployment Pod fails the Deployment Controller will replace the failed Pod. 
+
+Updates and Rollbacks: When a Pod template is updated in a Deployment resource, the Deployment Controller will deploy updated Pods before removing the older Pods. The new pods will not replace the older ones unless the start with a health state.
+
+Create a new file named `mongodb-deployment.yaml` and add the following contents.
 
 ```yaml
 apiVersion: app/v1
@@ -105,6 +119,13 @@ spec:
         image: mongodb:3.6.19-xenial
         ports:
           containerPort: 27017
+```
+
+The example above will deploy a single replica of a MongoDB instance. The base image will use the Docker Community MongoDB image at version 3.6.19, which is based on Ubuntu Xenial.
+
+Apply the manifest to create the deployment resource in Kubernetes.
+```shell
+kubectl apply -f mongodb-deployment.yaml
 ```
 
 ### Custom MongoDB Config File
@@ -208,7 +229,7 @@ kubectl apply -f mongodb-pvc.yaml
 To mount the volume we need to update our deployment manifest. A `volume` needs to be added to the `template` key in our manifest, and a `volumeMount` with the `container` key to mount the `volume`. We've highlighted both below.
 
 ```yaml {hl_lines=["24-25","30-32"]}
-apiVersion: app/v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mongodb
@@ -224,22 +245,25 @@ spec:
     spec:
       containers:
       - name: mongodb
-        image: mongodb:3.6.19-xenial
+        image: mongo:3.6.19-xenial
         ports:
-          containerPort: 27017
+          - containerPort: 27017
+        envFrom:
+        - secretRef:
+            name: mongodb-secret
         volumeMounts:
         - name: mongodb-configuration-file
           mountPath: /etc/mongod.conf
           readOnly: true
-        - name: mysql-persistent-storage
-          mountPath: /var/lib/mysql
-    volumes:
-    - name: mysql-persistent-storage
-      persistentVolumeClaim:
-        claimName: mysql-pv-claim
-    - name: mongodb-configuration-file
-      configMap:
-        name: mongodb-config-file
+        - name: mongodb-persistent-storage
+          mountPath: /data/db
+      volumes:
+      - name: mongodb-persistent-storage
+        persistentVolumeClaim:
+          claimName: mongodb-pv-claim
+      - name: mongodb-configuration-file
+        configMap:
+          name: mongodb-config-file
 ```
 
 Apply your deployment manifest to update an existing deployment or to create one.
@@ -313,14 +337,64 @@ spec:
 ## Administering MongoDB in Kubernetes
 While a MongoDB likely shouldn't be exposed outside of the Kuberentes cluster, an operator is still able to make a network connection with it. 
 
+### Port Forward
 The `kubectl port-forward` command allows us to create a proxied connection for your client machine to the Kubernetes service. For MongoDB this means we are able to make a mongodb client connection to our server.
 
 ```shell
 kubectl port-forward mongodb-service 27017 &
 ```
+  | Output
+```shell
+Forwarding from 127.0.0.1:27017 -> 27017
+Forwarding from [::1]:27017 -> 27017
+```
 
-With the proxy in place you can point the mongodb client to the server instance from your localhost. 
+With the port forwarded from our local machine to the MongoDB service we can use the `mongo` client to conenct.
 
 ```shell
-mongo --hhost localhost --port 27017 --username $MONGODB_USERNAME --password $MONGODB_PASSWORD
+mongo -u <root-username> -p <root-password>
 ```
+  | Output
+```shell
+MongoDB shell version v4.2.0
+connecting to: mongodb://127.0.0.1:27017/?compressors=disabled&gssapiServiceName=mongodb
+Handling connection for 27017
+Implicit session: session { "id" : UUID("feb9a859-43eb-4cb3-bdd9-ef76690cbb92") }
+MongoDB server version: 3.6.19
+WARNING: shell and server versions do not match
+Server has startup warnings: 
+2020-08-24T03:21:23.861+0000 I STORAGE  [initandlisten] 
+2020-08-24T03:21:23.861+0000 I STORAGE  [initandlisten] ** WARNING: Using the XFS filesystem is strongly recommended with the WiredTiger storage engine
+2020-08-24T03:21:23.861+0000 I STORAGE  [initandlisten] **          See http://dochub.mongodb.org/core/prodnotes-filesystem
+> 
+```
+
+### Interactive Container Shell
+Alternatively, an interactive shell can be opened into the running MongoDB container. You will need the name of your MongoDB pod in order to shell into it.
+
+```shell
+kubectl get pods
+```
+  | Output
+```shell
+NAME                       READY   STATUS    RESTARTS   AGE
+mongodb-7cfbc6f555-t97c4   1/1     Running   0          12m
+```
+
+We are only running a single replica and its name is `mongodb-7cfbc6f555-t97c4`. Now that we have the Pod's name we can shell into it.
+
+```shell
+kubectl exec -it mongodb-7cfbc6f555-t97c4 /bin/bash
+```
+  | Output
+```shell
+root@mongodb-7cfbc6f555-t97c4:/# 
+```
+
+When the interactive shell for the container created we can manage MongoDB using Mongo's interactive shell.
+
+```shell
+mongo -u $MONGO_INITDB_ROOT_USERNAME -p $MONGO_INITDB_ROOT_PASSWORD
+```
+
+
