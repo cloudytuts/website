@@ -81,7 +81,7 @@ There are two methods for creating secrets in Kubernetes: using the `kubectl cre
 {{< /warning >}}
 
 ```shell
-kubectl create secret wordpress-mysql --literal-string=MYSQL_ROOT_PASSWORD=
+kubectl create secret wordpress-mysql --literal-string=MYSQL_ROOT_PASSWORD=super-secret-password
 ```
 
 Alternatively, secrets can be defined in a manifest file. Secrets are defined under one of two keys in a secret manifest: `data` and `stringData`. Secrets defined under `data` must be base64 encoded, while secrets under `stringData` may be written in clear text. Either way, these values are stored base64 encoded in the etcd database and encrypted on disk.'
@@ -104,9 +104,10 @@ kind: Secret
 metadata:
     name: wordpress-mysql
 data: 
-    db.root.password: bXlzcWwuZmVlZG9ydXMtZGV2
+    db.root.password: c3VwZXItc2VjcmV0LXBhc3N3b3Jk
+    db.password: UEBzc3cwcmQx
 stringData:
-    db.name: wordpress
+    db.user: wp
 ```
 
 Create the secret by applying your manifest.
@@ -146,11 +147,21 @@ spec:
             secretKeyRef:
               name: wordpress-mysql
               key: db.root.password
-        - name: MYSQL_DB_NAME
+        - name: MYSQL_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: wordpress-mysql
+              key: db.name
+        - name: MYSQL_USER
           valueFrom:
             secretKeyRef:
               name: wordpress-mysql
-              key: db.name
+              key: db.user
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: wordpress-mysql
+              key: db.password
         ports:
         - containerPort: 3306
           name: mysql
