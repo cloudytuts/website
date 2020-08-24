@@ -13,7 +13,7 @@ date: "2020-06-30"
 description: |
     Learn how to containerize your React applications and deploy them into Kubernetes, and pull configuration data from configMaps and secrets.
 author: serainville
-repo: https://github.com/cloudytuts/kubernetes-in-action/tree/master/basic-react-application
+repo: https://github.com/cloudytuts/kubernetes-in-action
 ---
 
 Containerization has seen exponential growth in popular since the advent of Docker. However, it wasn't long before people identified the challenges with orchestrating a containerized environment. While a number of solutions were developed, Kubernetes became king.
