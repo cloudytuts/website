@@ -308,7 +308,7 @@ A CronJob backup for MongoDB will perform the following:
 * Copy dump to a storage bucket, such as a Google Cloud Storage Bucket.
 
 ```yaml
-apiVersion: v1
+apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: mongodb-backup
@@ -321,17 +321,23 @@ spec:
           containers:
           - name: mongodb-backup
             image: mongo:4.4.0-bionic
-            command:
-            - "/bin/mongodump"
-            - gsutil cp mongo-backup.json gs://my-project/backups
+            args:
+            - "/bin/sh"
+            - "-c"
+            - "/usr/bin/mongodump -u $MONGO_INITDB_ROOT_USERNAME -p $MONGO_INITDB_ROOT_PASSWORD -o /tmp/backup -h mongodb"
+            - "tar cvzf mongodb-backup.tar.gz /tmp/backup"
+            #- gsutil cp mongodb-backup.tar.gz gs://my-project/backups/mongodb-backup.tar.gz
+            envFrom:
+            - secretRef:
+                name: mongodb-secret
             volumeMounts:
-            - name: mongodb-database-volume
-              mountPath: /where/ever
-        restartPolicy: OnFailure
-        volumes:
-        - name: mongodb-database-volume
-          persistentVolumeClaim:
-            claimName: application-code-pv-claim
+            - name: mongodb-persistent-storage
+              mountPath: /data/db
+          restartPolicy: OnFailure
+          volumes:
+          - name: mongodb-persistent-storage
+            persistentVolumeClaim:
+              claimName: mongodb-pv-claim
 ```
 
 ## Administering MongoDB in Kubernetes
