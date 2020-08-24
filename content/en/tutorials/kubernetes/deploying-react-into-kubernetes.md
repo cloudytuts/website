@@ -33,29 +33,35 @@ As with all NPM based projects, your project will need to be transpiled prior to
 The following Dockerfile example shows two stages. (1) the build stage transpiles (compiles) the source files and outputs your final static JavaScript file, (2) the final stage copies your newly generated static files to an Nginx-based image. 
 
 ```dockerfile
-# Build stage with all source files, dependancies, and necessary build tools
+# Build stage for compiling the React app
 FROM node as build
-COPY ./src .
-RUN npm run-script build
+RUN mkdir /app
+COPY . /app
+WORKDIR /app
+RUN npm install \
+    && npm run-script build \
+    && ls -l
 
-# Clean, light-weight final image with only build artifacts
-FROM nginx:1.17 as final
-COPY --from=build build /usr/share/nginx/html
+# Final stage for creating the final Docker image
+FROM nginx as final
+COPY --from=build /app/build/ /var/www/html
 ```
 
 {{< warning >}}
 The example code snippet above does not define a `USER` action. By default a container will run with root privileges, therefore, it is an insecure image. [Setting a user]({{< relref path="tutorials/_index.md">}})
 {{< /warning >}}
 
-By using multistage builds we eliminate the need for placing our source files in the final image, which in most scenerios would be a security concern. Two stages are used in our build, and by doing so we separate our areas of concern. Our first stage compiles the project's static files, and the second stage generates the final image.
+The example Dockerfile above creates two stages: build and final. The build stage will create a container with all build dependancies. The Final stage only contains packages and files necessary to run our React application. It copies the contents of the build directory from the build stage into the default NGINX root document directory.
+
+The build stage will not be part of the final image, leaving us with a very clean and slim Docker container image for our React application.
 
 The command below builds the Docker image based on our `Dockerfile`. The `-t` flag tags the image with the Docker repository name and our app's name. It also includes a version to easily identify the build.
 
 ```shell
-  docker build -t my.docker.repo/myapp:v0.1.0 .
+  docker build -t myapp:v0.1.0 .
 ```
 
-If you are using a remote Docker repistory, you will need to push your newly created image to it.
+If your Kubernetes cluster is hosted and not running locally, you will need to publish your image to a Docker repository accessible to your cluster. For example, Docker Hub is publicly available and any cluster is able to access it. If you are running in Google Cloud, you could push your image to Google Container Repository (GCR).
 
 ```shell
 docker push my.docker.repo/myapp:v0.1.0
@@ -64,6 +70,8 @@ docker push my.docker.repo/myapp:v0.1.0
 
 ## Kubernetes Deployment Manifest
 A Kubernetes deployment defines how an application will be deployed. Like all things Kubernetes, a manifest is typically a YAML file. 
+
+Create a new file named `deployments.yaml` and add the following contents.
 
 ```yaml
 apiVersion: v1
@@ -92,20 +100,17 @@ spec:
             - containerPort: 80
 ```
 
+To create the deployment resource in your Kubernetes cluster use the `kubectl apply` command.
+
+```shell
+kubectl apply -f deployment.yaml
+```
+
+### Understanding the Manifest
 ### Metadata
-Metadata is an important part of grouping common resources in Kubernetes. At minimum a deployment requires a `name` key, however, in larger, more complex Kubernetes environments you will need to expand your usage of metadata. 
+Metadata is an important part of grouping common resources in Kubernetes. Every resource in a Kubernetes cluster will have a name key. At minimum a deployment requires a `name` key, however, in larger, more complex Kubernetes environments you will need to expand your usage of metadata. 
 
-{{< warning >}}
-Never **deploy** a Docker container to production without adjusting the user.
-{{< /warning >}}
-
-Your success in implementing blue-green, canary, or other deployment strategies will depend on your ability separate and group common resources. 
-
-{{< casestudy "Canary Deployments" >}}
-With canary deployments its common for multiple versions of your applications to be deployed. Each version deploy could expose itself via the same service and, therefore, load balancer. By applying an appropriate metadata scheme it becomes easier to execution against a specific version of your application. 
-{{< /casestudy >}}
-
-The example deployment YAML file consists of four common labels.
+Your success in implementing deployment strategies such as blue-green, and canary will depend on your ability to separate and group resources. Kubernetes provides a best practice for labelling applications. We've included the most common labels that most applications should use.
 
 | Metadata Label | Description |
 | --- | --- |
@@ -115,9 +120,13 @@ The example deployment YAML file consists of four common labels.
 | `kubernetes.io/version` | is self explanatory.  |
 
 
-### Deployment Spec
+### Spec
 
 The spec defines what container to deploy and how it will be deployed. It is here where you set the image to be deployed and whether there are replicas, for example. 
+
+The `replicas` key-value sets the number of Pods the deployment will create for your application.
+The `template` key is used to define the containers that will run in your pods.
+
 
 ## ConfigMaps
 Application configurations can differ from one environment to another. If all configurations were to be hard-coded into your application you would lose the ability of being portable; a single image of your application could not be deployed into any environment as environment specific images would be required. 
