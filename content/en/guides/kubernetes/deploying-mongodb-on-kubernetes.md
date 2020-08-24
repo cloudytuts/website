@@ -272,3 +272,55 @@ Apply the manifest to the Kubernetes cluster to create the service resource.
 ```shell
 kubectl apply -f mongodb-service.yaml
 ```
+
+## Backing Up MongoDB
+### CronJob
+A CronJob is a scheduled, containerized job. 
+
+A CronJob backup for MongoDB will perform the following:
+* Run MongoDB container image
+* Mount volume used by MongoDB instance
+* Execute `mongodump` command to dump database
+* Copy dump to a storage bucket, such as a Google Cloud Storage Bucket.
+
+```yaml
+apiVersion: v1
+kind: CronJob
+metadata:
+  name: mongodb-backup
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: mongodb-backup
+            image: mongodb:5.1.1
+            command:
+            - "/bin/mongodump"
+            - gsutil cp mongo-backup.json gs://my-project/backups
+            volumeMounts:
+            - name: mongodb-database-volume
+              mountPath: /where/ever
+        restartPolicy: OnFailure
+        volumes:
+        - name: mongodb-database-volume
+          persistentVolumeClaim:
+            claimName: application-code-pv-claim
+```
+
+## Administering MongoDB in Kubernetes
+While a MongoDB likely shouldn't be exposed outside of the Kuberentes cluster, an operator is still able to make a network connection with it. 
+
+The `kubectl port-forward` command allows us to create a proxied connection for your client machine to the Kubernetes service. For MongoDB this means we are able to make a mongodb client connection to our server.
+
+```shell
+kubectl port-forward mongodb-service 27017 &
+```
+
+With the proxy in place you can point the mongodb client to the server instance from your localhost. 
+
+```shell
+mongo --hhost localhost --port 27017 --username $MONGODB_USERNAME --password $MONGODB_PASSWORD
+```
