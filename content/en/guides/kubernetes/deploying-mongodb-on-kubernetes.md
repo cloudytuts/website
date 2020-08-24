@@ -245,7 +245,7 @@ spec:
     spec:
       containers:
       - name: mongodb
-        image: mongo:3.6.19-xenial
+        image: mongo:4.4.0-bionic
         ports:
           - containerPort: 27017
         envFrom:
@@ -320,7 +320,7 @@ spec:
         spec:
           containers:
           - name: mongodb-backup
-            image: mongodb:5.1.1
+            image: mongo:4.4.0-bionic
             command:
             - "/bin/mongodump"
             - gsutil cp mongo-backup.json gs://my-project/backups
