@@ -23,18 +23,27 @@ In this tutorial you will learn how to weld Kubernetes to run your React-based w
 Resources have been provided to aid you in following along with this tutorial. The resources as a repository in Github.
 
 ## Containerize your React App
-Once transpiled, a React app will consist of at least two static files: an HTML file and a JavaScript file. Kubernetes is not capable of serving static files, as it is a container orchestrator. In order to server static files you must generate a container image capable of hosting your static files.
+Once transpiled, a React app consists of one or more static files. Kubernetes is not capable of serving static files alone, as it is a container orchestration platform. In order to server static files you must generate a container image capable of hosting your static files.
 
-Nginx is very popular for serving static files. 
+A very popular web server for serving static files is NGINX. In this tutorial we will adopt it by building our image using the official NGINX image.
 
-## Building Your Image
-As with all NPM based projects, your project will need to be transpiled prior to be being deployed. When preparing your final container image us multistage Docker builds. 
+### Building Your Image
+To build a Docker image you must create a `Dockerfile`, which defines actions to create a container image. To streamline our processes we will create a Dockerfile that combines our application build with application deployment. 
 
-The following Dockerfile example shows two stages. (1) the build stage transpiles (compiles) the source files and outputs your final static JavaScript file, (2) the final stage copies your newly generated static files to an Nginx-based image. 
+Our `build` stage will contain all of the tooling, node modules, and source files necessary to build our React app. There's no need to optimize this stage as its existence is only temporary.
+  * Use the official Node docker image as a base
+  * Use a specific verison of node that matches our code base (14.8.0)
+  * Use a Debian based image to allow easier customization
+
+Our `final` stage will build our final container image. As this is a React app we need a static file web server to host our application.
+  * Build image based on official NGINX Docker image
+  * Copy build artifacts from build stage to NGINX root document directory
+
+Based on our requirements above the final Dockerfile would resemble the following.
 
 ```dockerfile
 # Build stage for compiling the React app
-FROM node as build
+FROM node:14.8.0-stretch as build
 RUN mkdir /app
 COPY . /app
 WORKDIR /app
@@ -43,19 +52,15 @@ RUN npm install \
     && ls -l
 
 # Final stage for creating the final Docker image
-FROM nginx as final
+FROM nginx:1.19-alpine as final
 COPY --from=build /app/build/ /var/www/html
 ```
 
-{{< warning >}}
-The example code snippet above does not define a `USER` action. By default a container will run with root privileges, therefore, it is an insecure image. [Setting a user]({{< relref path="tutorials/_index.md">}})
-{{< /warning >}}
+{{< note >}}
+The Dockerfile above pulls a very specific version of Node. It is strongly recommended to match your Node Docker version with the one used in development. Even a bug release may introduce variances that affect how your application operates.
+{{< /note >}}
 
-The example Dockerfile above creates two stages: build and final. The build stage will create a container with all build dependancies. The Final stage only contains packages and files necessary to run our React application. It copies the contents of the build directory from the build stage into the default NGINX root document directory.
-
-The build stage will not be part of the final image, leaving us with a very clean and slim Docker container image for our React application.
-
-The command below builds the Docker image based on our `Dockerfile`. The `-t` flag tags the image with the Docker repository name and our app's name. It also includes a version to easily identify the build.
+To build our Docker image you use the `docker build` command.  The `-t` flag tags the image to more easily identify the image, and we will use it to reference our apps name and its release version.
 
 ```shell
   docker build -t myapp:v0.1.0 .
@@ -67,8 +72,7 @@ If your Kubernetes cluster is hosted and not running locally, you will need to p
 docker push my.docker.repo/myapp:v0.1.0
 ```
 
-
-## Kubernetes Deployment Manifest
+## Deployment
 A Kubernetes deployment defines how an application will be deployed. Like all things Kubernetes, a manifest is typically a YAML file. 
 
 Create a new file named `deployments.yaml` and add the following contents.
@@ -106,7 +110,6 @@ To create the deployment resource in your Kubernetes cluster use the `kubectl ap
 kubectl apply -f deployment.yaml
 ```
 
-### Understanding the Manifest
 ### Metadata
 Metadata is an important part of grouping common resources in Kubernetes. Every resource in a Kubernetes cluster will have a name key. At minimum a deployment requires a `name` key, however, in larger, more complex Kubernetes environments you will need to expand your usage of metadata. 
 
@@ -120,18 +123,26 @@ Your success in implementing deployment strategies such as blue-green, and canar
 | `kubernetes.io/version` | is self explanatory.  |
 
 
-### Spec
+#### Spec
 
 The spec defines what container to deploy and how it will be deployed. It is here where you set the image to be deployed and whether there are replicas, for example. 
 
 The `replicas` key-value sets the number of Pods the deployment will create for your application.
 The `template` key is used to define the containers that will run in your pods.
 
+## Storing Configurations
+Most applications require environment specific configurations. These configurations can range from the number of cards to display on screen, to connections for a backend system.
 
-## ConfigMaps
+There are two types of resources in Kuberentes for storing configuration data. The first is a `ConfigMap` and the second is a `Secret`. 
+
+**ConfigMaps** are for general configurations that are not sensitive. A typically use case is backend hostname of your database server, or how many cards to display on your screen.
+
+**Secrets** are designed to store sensitive information. Private keys, API keys, and user credentials are typically stored in these. Kuberentes protects secrets by encrypting them on disk. As another level of protection, values are base64 encoded to protect from people looking over your shoulder.
+
+### ConfigMaps
 Application configurations can differ from one environment to another. If all configurations were to be hard-coded into your application you would lose the ability of being portable; a single image of your application could not be deployed into any environment as environment specific images would be required. 
 
-Kubernetes provides ConfigMaps, which is a key-value pair manifest for storing your applications configurations. 
+Kubernetes provides ConfigMaps, which is a key-value pair manifest for storing your application's  non-sensitive configuration parameters. 
 
 ```yaml
 apiVersion: v1
@@ -142,8 +153,8 @@ data:
     api.server: https://api.server:3000
     cards.screen: 10
 ```
-
-Create a new file in the project directory named `.env`. The *.env* file, or environment file, allows you to set parameters specific for an environment. With Kubernetes, we can store the env file as a configMap. 
+#### Files
+ConfigMaps can also be used to store files. These files can then be mounted in a Pod for an application to read it. For example, Node projects can use an `.env` to store environment configs. The `.env` could be stored in a ConfigMap, mounted to a running Pod, and read by your application at startup.
 
 Create a new file named `.env` and add any parameters required for your environment.
 
@@ -161,7 +172,7 @@ kubectl create configmap reactui --from-file=.env
 configmap/reactui created
 ```
 
-Using the `kubectl get secrets` command we can see the state of our newly created configMap resource in Kubernetes. The output has three columns: `NAME`, `DATA`, and `AGE`. 
+Using the `kubectl get configmap` command we can see the state of our newly created configMap resource in Kubernetes. The output has three columns: `NAME`, `DATA`, and `AGE`. 
 
 ```shell
 kubectl get configmap
@@ -196,13 +207,10 @@ Data
 api.server=https://api.server:3000
 ```
 
+### Environment Variables from ConfigMaps
+The most basic way to use configMaps is to create environment variables from the keys. To create environment variables in your pods based on values in a ConfigMap, you will define the environment variable name and which key value to use from a ConfigMap.
 
-
-
-
-Mounting ConfigMaps into your Pod
-
-```yaml
+```yaml {hl_lines=["9-19"]}
 apiVersion: v1
 kind: Pod
 metadata:
@@ -224,7 +232,22 @@ spec:
             key: cards.screen
 ```     
             
-## Secrets
+The example above highlights the changes necessary to create environment variables in your deployment. We've defined two environment variables: `API_SERVER` and `CARDS_PER_SCREEN`.
+
+Both environment variables use a configMap named `reactui-app`. The `API_SERVER` gets its value from the `api.server` configmap key, and the `CARDS_PER_SCREEN` gets its value from the `cards.screen` configmap key.
+
+Alternatively, the entire configMap can be used to create environment variables, rather than specifying individual keys.
+
+```yaml
+envFrom:
+  configMapRef:
+    name: reactui-app
+```
+
+With this method the environment variables will be named after the configmap key.
+
+
+### Secrets
 Protecting sensitive information is crucial to an application's security. Kubernetes provides Secrets as a means to store sensitive information in the cluster. The data is encrypted at rest as a base64 encoded string.
 
 React applications typically use api keys to interact with backend services and third-party services. API keys are a good example of a secret, as it is usually not desirable for it to be exposed to the public. Rather than commiting your API key in your source code, creating a potential security risk, use a Kubernetes secret and pull it into your React application as an environment variable.
@@ -233,7 +256,7 @@ Kubernetes does not provide secrets lifecycle management, meaning out of the box
 
 Aside from being encrypted, secrets are identical to ConfigMaps. They can be key-value pairs or files that can be read as environment variables or mounted as files.
 
-### Creating Secrets Manifest
+#### Creating Secrets Manifest
 Create a new YAML file with the following structure. Your sensitive information will be stored under the `data` key, using a unique parameter name. 
 
 {{< note >}}
@@ -261,7 +284,7 @@ To apply the new secrets file, use the `kubectl apply` command.
 kubectl apply -f demo-app-secrets.yaml
 ```
 
-### Secrets as Environment Variables
+#### Secrets as Environment Variables
 With the secrets securely stored in Kubernetes you can now access them from a `pod` or `deployment`, for example. In our demonstration we will be accessing them for our React deployment.
 
 ```yaml
