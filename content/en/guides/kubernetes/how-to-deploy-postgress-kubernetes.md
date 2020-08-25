@@ -8,6 +8,7 @@ tags:
   - kubernetes
 description: |
     Learn how to deploy a PostgreSQL container instance in Kubernetes with persistent storage, configMaps, and secrets. Also, how to backup a PostgreSQL database in Kubernetes.
+repo: https://github.com/cloudytuts/kubernetes-in-action
 ---
 
 In this guide, you will learn how to deploy and run a Postres database server instance in Kubernetes. 
@@ -149,11 +150,11 @@ spec:
         envFrom:
           - secretRef:
               name: postgres-secrets
-          - configRef:
+          - configMapRef:
               name: postgres-configmap  
         volumeMounts:
         - name: postgres-database-storage
-            mountPath: /var/lib/pgsql/data
+          mountPath: /var/lib/pgsql/data
       volumes:
       - name: postgres-database-storage
         persistentVolumeClaim:
