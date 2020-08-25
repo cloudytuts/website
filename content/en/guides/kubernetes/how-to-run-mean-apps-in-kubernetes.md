@@ -4,7 +4,7 @@ date: 2020-08-24T20:58:15-04:00
 draft: false
 author: serainville
 tags:
-  - mern
+  - mean
   - mongodb
   - kubernetes
   - express
