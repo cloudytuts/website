@@ -16,21 +16,25 @@ Unfortunately, at the time of writing this tutorial, hierarchical namespaces are
 ## Install Hierarchical Namespaces
 Hierarchical namespaces requires a new controller to be installed on your cluster(s). The controller YAML is available from the [multi-tenancy](https://github.com/kubernetes-sigs/multi-tenancy/releases) repository of Kubernetes' [kubernetes-sigs](https://github.com/kubernetes-sigs) project.
 
-### Controller
+### Install HNC Controller
+The new HNC controller can be installed by downloading a YAML file from Kubernetes' SIGs repository for multi-tenancy. To install the controller on your Kubernetes cluster run the following commands. 
 ```shell
 HNC_VERSION=v0.5.1
-kubectl apply -f https://github.com/kubernetes-sigs/multi-tenancy/releases/download/hnc-${HNC_VERSION}/hnc-manager
+kubectl apply -f https://github.com/kubernetes-sigs/multi-tenancy/releases/download/hnc-${HNC_VERSION}/hnc-manager.yaml
 ```
 
 ### Kubectl Plugin
+In order for kubectl to support the Hierarchical Namespace Controller a plugin must be installed. The plugin is also available from the Multi-tenancy SIGs repository. To download and install the HNC plugin on your workstation, run the following commands.
 ```shell
 HNC_VERSION=v0.5.1
 curl -L https://github.com/kubernetes-sigs/multi-tenancy/releases/download/hnc-${HNC_VERSION}/kubectl-hns -o ./kubectl-hns
 chmod +x ./kubectl-hns
+```
 
-# Ensure the plugin is working
+To verify the plugin installed correctly, use the new `kubectl hns` command.
+
+```shell
 kubectl hns
-# The help text should be displayed
 ```
 
 
@@ -56,5 +60,34 @@ myapp
 └── production
 ```
 
+## Creating Hierarchical Namespaces
 
+### Create Parent Namespace
+Let's begin by creating a parent namespace. 
 
+```shell
+kubectl create namespace wordpress
+```
+
+### Create Nested Namespace
+To create a child namespace you do not use the `kubectl create namespace` command. Instead, you use the new `kubectl hns` command. For example, to add a child namespace to the `wordpress` namespace created above.
+
+```shell
+kubectl hns create production -n wordpress
+```
+
+### Namespace Tree
+The Hierarchical Namespace plugin provides topology view of your nested namespaces. It includes a `tree` command to output a visual representation of the hierarchy. 
+
+To view a tree of the `wordpress` namespace, use the `kubectl hns tree` command.
+
+```shell
+kubectl hns tree wordpress
+```
+
+The output of the command will look like the following.
+
+```shell
+wordpress
+└── production
+```
