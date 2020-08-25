@@ -279,12 +279,201 @@ mongo -u root -p'super-secret-password'
 ## Deploy Express App
 ### Configurations
 ### Deployment
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: express-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: express-app
+  template:
+    metadata:
+      labels:
+        app: express-app
+    spec:
+      containers:
+      - name: express-app
+        image: myproject/express-app:1.0.0
+        ports:
+          - containerPort: 3000
+        env:
+        - name: MONGO_DB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: mongodb
+              key: MONGO_INITDB_ROOT_USERNAME
+        - name: MONGO_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mongodb
+              key: MONGO_INITDB_ROOT_PASSWORD
+        - name: MONGO_DB_HOST
+          value: mongodb.default.svc
+```
 ### Service
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: express-app
+  labels:
+    app: express-app
+spec:
+  ports:
+    - port: 3000
+  selector:
+    app: express-app
+  clusterIP: None
+```
 
 ## Deploy Angular App
 ### Configurations
 ### Deployment
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: angular-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: angular-app
+  template:
+    metadata:
+      labels:
+        app: angular-app
+    spec:
+      containers:
+      - name: angular-app
+        image: myproject/angular-app:1.0.0
+        ports:
+          - containerPort: 80
+        env:
+        - name: BACKEND_API_HOST
+          value: express-app.default.svc
+        - name: BACKEND_API_KEY
+          valueFrom:
+            secretKeyRef:
+                name: angular-app
+                key: BACKEND_API_KEY
+```
 ### Service
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: angular-app
+  labels:
+    app: angular-app
+spec:
+  ports:
+    - port: 80
+  selector:
+    app: angular-app
+  type: loadBalancer
+```
+
+## Using .ENV Files
+In the examples above for Angular and Express we used ConfigMaps and Secrets to store environmental configurations. However, many node-based projects use `.env` files. To continue using `.env` files they can be added as configMaps, or Secrets if sensitive information is inside.
+
+When you store a file in a ConfigMap or a Secret Kubernetes can add the file to your Pods by creating a Volume Mount for it. 
+
+```json
+{
+    "dev": {
+        "ANGULAR_APP_BASE_URL": "development",
+    },
+    "qa": {
+        "ANGULAR_APP_BASE_URL": "development",
+    },
+    "prod": {
+        "ANGULAR_APP_BASE_URL": "development",
+    },
+}
+```
+### Adding .ENV to ConfigMap
+
+Add files to to ConfigMap
+```shell
+kubectl create configmap angular-app --from-file=.env=.env
+```
+
+### Adding .ENV to Secret
+
+Add files to a Secret
+```shell
+kubectl create secret generic angular-app --from-file=.env=.env
+```
+
+### Mounting .ENV File
+To mount the `.env` file in your pods two things must be done in your Deployment manifest. A `volume` must be defined in the spec, and a `volumneMount` added to the container.
+
+Volumes are defined under the `template` `spec`, where they are given a name a their source is configured. The following example shows a new volume named `angular-env-file`, which uses content from a `angular-env` configMap.
+```yaml
+volumes:
+- name: angular-env-file
+  configMap:
+    name: angular-env
+```
+
+If you were sourcing from a Secret instead, the volume would be defined as follows.
+```yaml
+volumes:
+- name: angular-env-file
+  secret:
+    name: angular-env
+```
+
+Next a `volumeMount` must be added to the `container` that references to `volume`. The following example uses the `angular-env-file` above, mounts the volume as a file named `/app/.env`, and marks it as `readOnly` for security.
+```yaml
+volumeMounts:
+- name: angular-env-file
+  mountPath: /app/.env
+  readOnly: true
+```
+
+Putting it all together, your Deployment manifest would look similar to the following.
 
 
+```yaml {hl_lines=["28-35"]}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: angular-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: angular-app
+  template:
+    metadata:
+      labels:
+        app: angular-app
+    spec:
+      containers:
+      - name: angular-app
+        image: myproject/angular-app:1.0.0
+        ports:
+          - containerPort: 80
+        env:
+        - name: BACKEND_API_HOST
+          value: express-app.default.svc
+        - name: BACKEND_API_KEY
+          valueFrom:
+            secretKeyRef:
+                name: angular-app
+                key: BACKEND_API_KEY
+        volumeMounts:
+        - name: angular-env-file
+          mountPath: /app/.env
+          readOnly: true
+      volumes:
+      - name: angular-env-file
+        configMap:
+          name: angular-env
+```
 
