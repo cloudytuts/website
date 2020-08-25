@@ -1,5 +1,5 @@
 ---
-title: "How to Deploy Postgress Kubernetes"
+title: "How to Deploy Postgres in Kubernetes"
 date: 2020-08-25T11:59:28-04:00
 draft: false
 author: serainville
