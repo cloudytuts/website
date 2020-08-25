@@ -11,6 +11,7 @@ tags:
   - angular
 description: |
     Learn how to deploy and run a MERN app stack in Kubernetes
+repo: https://github.com/cloudytuts/kubernetes-in-action
 ---
 
 In this guide, you will learn how to deploy and run a MERN stack in Kubernetes. This guide will walk you through the entire stack of MERN application. You will learn how to deploy a MongoDB server, your Express.js app, and finally your Angular app.
