@@ -219,7 +219,7 @@ spec:
       storage: 1Gi
 ```
 
-The volume claim will createa writable storage volume, provisioned by your cloud provider, with a 1GB size. 
+The volume claim will create a writable storage volume, provisioned by your cloud provider, with a 1GB size. 
 
 Apply it to the cluster using the `kubectl apply` command.
 ```shell

@@ -24,9 +24,9 @@ description: |
 ## Environment Agnostic Configurations
 When designing the container image for your JavaScript application you should keep it as simple as possible. The image should not be specific to any environment, rather it should be able to operate in any environment. 
 
-Building environment specific images as a workflow dependancy where changes to one environment must be promoted to other environments. As this is usually never a simple operation, since environments rarely mirror each other, you will begin to experience config drift.
+Building environment-specific images as a workflow dependancy where changes to one environment must be promoted to other environments. As this is usually never a simple operation, since environments rarely mirror each other, you will begin to experience config drift.
 
-Config drifts bring risk into your development workflows. If there is too much drift an application's behavoir may change between environments, which will invaldidate your test results. 
+Config drifts bring risk into your development workflows. If there is too much drift an application's behavior may change between environments, which will invalidate your test results. 
 
 ### Environment Variables
 Environment configuration should be injected using environment variables where possible. When environment variables are not appropriate, a deployment pipeline should then be used to inject configuration files.
@@ -42,14 +42,14 @@ When building a Docker image for any node-base JavaScript project you will have 
 
 The problem with node-based JavaScript applications is they require two things that do not belong in production. Node projects require build tools as well as a mammoth node_modules dependancy directory. Neither of which should exist in a production image.
 
-### Two stage build
-A two stage build is used strictly to compile, or transpile in the case of JavaScript, your application. We install all of your dependant tools and project dependancies, and build the application. 
+### Two-stage build
+A two-stage build is used strictly to compile, or transpile in the case of JavaScript, your application. We install all of your dependant tools and project dependancies, and build the application. 
 
 ```dockerfile
 FROM node:latest AS build
 COPY ./src .
 RUN npm install \
-    & npm run-script build-production
+    && npm run-script build-production
 ```
 
 The second stage creates the final Docker image. This image will only contain our application's build artifacts and services required to run the application.
@@ -59,8 +59,20 @@ FROM nginx:latest AS final
 COPY --from=build build/* /usr/local/nginx/html
 ```
 
+The final Dockerfile with both stages would look similar to the following.
+
+```dockerfile
+FROM node:latest AS build
+COPY ./src .
+RUN npm install \
+    && npm run-script build-production
+
+FROM nginx:latest AS final
+COPY --from=build build/* /usr/local/nginx/html
+```
+
 ### Three Stage Build
-An example of a three stage build would test, compile, and build a final application container. We let our Docker container handle most of the continuous deployment pipeline. 
+An example of a three-stage build would test, compile, and build a final application container. We let our Docker container handle most of the continuous deployment pipeline. 
 * We ensure our unit tests pass
 * We build our application artifacts
 * We output a final image for an environment agnostic image

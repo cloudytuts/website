@@ -17,7 +17,7 @@ Understanding how to interact with a running Docker container is a foundamental 
 
 ## Whats Covered
 * Learn how to interactively shell into a container
-* Understand emphemeral container states
+* Understand ephemeral container states
 
 ## Interactive Shell
 An interactive shell is what we use to execute commands on a Linux host, with Bash being one of the most popular. Nearly all Docker containers are configured to allow running Bash or similar shell.
@@ -38,14 +38,14 @@ Depending on the base image used to run your container the shell path may differ
 ### Debian and Ubuntu Containers
 Debian, Red Hat, and Ubuntu all use the common Bash shell. To open an interactive bash shell into a container based off of any of these Linux distributions, we would set the shell path as `/bin/bash`/
 
-For example, to open an interactive Bash shell for an Debian, Red Hat, or Ubuntu based container with the ID `abc123` you would run the following command:
+For example, to open an interactive Bash shell for a Debian, Red Hat, or Ubuntu based container with the ID `abc123` you would run the following command:
 
 ```shell
 docker exec -it abc123 /bin/bash
 ```
 
 ### Alpine-based Containers
-Alpine Linux uses a different shell than Debian, Read Hat, and Ubuntu. It uses the Alpine Shell, or `ash` for short. 
+Alpine Linux uses a different shell than Debian, Red Hat, and Ubuntu. It uses the Alpine Shell, or `ash` for short. 
 
 To open an interactive shell with an Alpine Linux based container, we would execute the following command.
 
@@ -60,7 +60,7 @@ To exit from an interactive shell you can typically just type `exit` and press e
 exit
 ```
 
-What ever changes to the state of your running container that were made while in the interactive shell will remain.
+Whatever changes to the state of your running container that were made while in the interactive shell will remain.
 
 
 ## Ephemeral
@@ -68,4 +68,4 @@ Running Docker containers are ephemeral, meaning their state is wiped as soon as
 
 However, if you are performing actions against files on a mounted volume in your container, those changes will persist beyond the life of your running container.
 
-To permenantly apply your state changes you must update the image your container is based on.
+To permanently apply your state changes you must update the image your container is based on.

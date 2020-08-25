@@ -1,5 +1,5 @@
 ---
-title: "Set Default Kubernetes Namespace"
+title: "How to set Default Kubernetes Namespace"
 date: 2020-08-17T14:18:50-04:00
 draft: false
 author: serainville
@@ -10,12 +10,14 @@ description: |
     Learn how to set a default namespace using the kubectl command instead of having to specify it in commonly used spaces.
 ---
 
+In this tutorial, you will learn how to set a default namespace context for kubectl.
+
 Kubernetes organizes all of its resources into namespaces. As an organizational unit, namespaces provide a means to apply separation of concern for resources used by different projects or teams, for example.
 
 By default all resources are created in the `default` namespace, unless a namespace is specified. This is also true for all commands against your cluster. When a namespace is not specified in a `kubectl` command with the `-n` flag, Kubernetes will return results from resources in the `default` namespace.
 
 ## Setting Default Namespace
-Namespace defaults are set in your cluster's context configuration. We change the default you will need to use the `kubectl` `set-conifg` command and specify the name of the namespace want to be used as default.
+Namespace defaults are set in your cluster's context configuration. We change the default you will need to use the `kubectl` `set-config` command and specify the name of the namespace want to be used as default.
 
 ```shell
 kubectl config set-context --current --namespace=NAMESPACE

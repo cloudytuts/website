@@ -63,7 +63,7 @@ myapp
 ## Creating Hierarchical Namespaces
 
 ### Create Parent Namespace
-Let's begin by creating a parent namespace. 
+Let's begin by creating a parent namespace. This namespace will be the top-level namespace in our hierarchy. 
 
 ```shell
 kubectl create namespace wordpress

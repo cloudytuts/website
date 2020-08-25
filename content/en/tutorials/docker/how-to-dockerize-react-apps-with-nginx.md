@@ -66,10 +66,10 @@ The first stage of our Docker build will run units tests and build our applicati
 
 ```dockerfile
 FROM node:latest AS build
-COPY ./src ./src
+COPY ./src .
 RUN npm install \ 
-    & npm run-script test \
-    & npm run-script build-production
+    && npm run-script test \
+    && npm run-script build-production
 ```
 
 ### Final Stage
@@ -87,13 +87,13 @@ Our final Dockerfile should resemble the following example. We have defined two 
 
 ```dockerfile
 FROM node:latest AS build
-COPY ./src ./src
+COPY ./src .
 RUN npm install \ 
-    & npm run-script test \
-    & npm run-script build-production
+    && npm run-script test \
+    && npm run-script build-production
 
 FROM nginx:latest AS final
-COPY --from=build ./build/* /usr/local/nginx/html  
+COPY --from=build build/ /usr/local/nginx/html  
 ```
 
 
