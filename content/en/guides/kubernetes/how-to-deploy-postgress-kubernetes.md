@@ -190,5 +190,44 @@ The `default` part of the name is derived from the resource's namespace. Since w
 
 
 ## Backing up Databases
+As with any database service, backups should be done routinely in order to safe guard your data. While you could `kubectl exec` into the running Postgres Pod and run the `pg_dump`, that's a manual process that should be avoided. 
 
-## Updating PostgreSQL
+Instead, we are going to create a CronJob in order for us to automate the task. A Kuberentes CronJob is a scheduled job that schedules a pod for executing commands. Our CronJob will perform the following tasks.
+
+* Use the Google Cloud SDK Docker image
+* Mount the Postgre database persistent volume.
+* Use the Postgres ConfigMap and Secret to inject environment variables
+* Execute `pg_dump` against the database
+* Copy the database dump to a Google Cloud Storage Bucket.
+
+```yaml
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: postgres-backup
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: postgres-backup
+            image: google/cloud-sdk:alpine
+            args:
+            - apk --update add postgresql
+            - pg_dump -u myblog > myblog-$(date +%s).bak
+            - gsutil cp myblog.bak gs://myblog/backups
+          envFrom:
+          - secretRef:
+              name: postres-secrets
+          - configMapRef:
+              name: postgres-configmap
+          volumeMounts:
+          - name: postgres-database-storage
+            mountPath: /var/lib/pgsql/data
+        volumes:
+        - name: postgres-database-storage
+          persistentVolumeClaim:
+            claimName: postgres-pv-claim         
+```
