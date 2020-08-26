@@ -9,6 +9,7 @@ tags:
   - cicd
 description: |
     Learn how to deploy Jenkins on Kuberentes using persistent volumes for maintaining plugin installation state, services to expose Jenkins, and configMaps for configuring the server.
+repo: https://github.com/cloudytuts/kubernetes-in-action
 ---
 
 In this guide, you will learn how to deploy Jenkins on Kubernetes for the purpose of running a containerized build system. Jenkins is a free, open source build system written in Java. Likely the most common you build server you will find running in an software engineering or development environment. 
