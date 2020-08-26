@@ -13,7 +13,9 @@ description: |
 
 In this tutorial, you will learn how to safely upgrade your Postgres containers in order to run more recent versions of the database server. These instructions apply to moving between major release (11.x -> 12.x) and do not apply to minor or bug releases.  
 
-Applications like Postgres were not designed to run in a containerized world, as conventions introduced with Docker did not exist when they were originally written. 
+Applications like Postgres were not designed to run in a containerized world, as conventions introduced with Docker did not exist when they were originally written.
+
+Instead, we will have to follow old, trusted conventions to safely upgrade Postgres in Docker or Kubernetes. You will need to dump your databases from the image running the older Postgres version, and then import the dump into the container running a new version of Postgres.
 
 ## 1. Deploy New Postgres Image
 The first step is to deploy a new Postgress container using the updated image version. This container MUST NOT mount the same volume from the older Postgress container. It will need to mount a new volume for the database.
