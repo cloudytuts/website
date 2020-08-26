@@ -36,7 +36,7 @@ Create a new file named `namespace.yaml` and add the following contents to it.
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: devops
+  name: cicd
 ```
 
 To create the namespace using the Namespace manifest, run the `kubectl apply` command.
@@ -52,7 +52,7 @@ docker            Active   2d9h
 kube-node-lease   Active   2d9h
 kube-public       Active   2d9h
 kube-system       Active   2d9h
-devops            Active   13s
+cicd              Active   13s
 ```
 
 
@@ -66,7 +66,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: jenkins-pv-claim
-  namespace: jenkins
+  namespace: cicd
   labels:
     app: jenkins
 spec:
@@ -99,7 +99,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: jenkins
-  namespace: jenkins
+  namespace: cicd
 data:
   java_opts: -Dhudson.footerURL=http://mycompany.com
   jenkins_slave_agent_prot: 8899
@@ -119,10 +119,10 @@ To support TLS with Jenkins we will create two resources: a ConfigMap and a Secr
 
 ```yaml
 apiVersion: v1
-kind: ConfigMAp
+kind: ConfigMap
 metadata:
   name: jenkins
-  namespace: jenkins
+  namespace: cicd
 data:
   jenkins_opts: --httpPort=-1 --httpsPort=8083 --httpsCertificate=/var/lib/jenkins/cert --httpsPrivateKey=/var/lib/jenkins/pk
   executors.groovy: |
@@ -154,7 +154,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: jenkins
-  namespace: jenkins
+  namespace: cicd
 spec:
   replicas: 1
   selector:
@@ -172,26 +172,24 @@ spec:
           - containerPort: 8083
         env:
         - name: JENKINS_OPTS
-          configMapKeyRef:
-            - name: jenkins
+          valueFrom:
+            configMapKeyRef:
+              name: jenkins
               key: jenkins_opts
         volumeMounts:
         - name: jenkins-storage
           mountPath: /var/lib/pgsql/data
         - name: jenkins-tls-cert
-          mountPath: /var/lib/jenkins/cert
-        - name: jenkins-tls-pk
-          mountPath: /var/lib/jenkins/pk
+          mountPath: /var/lib/jenkins
       volumes:
-      - name: jenkins-tls-cert
+      - name: jenkins-tls
         secret:
-          name: jenkins-tls
-          key: tls.cert
-      - name: jenkins-tls-pk
-        secret:
-          name: jenkins-tls
-          key: tls.key
-      
+          secretName: jenkins-tls
+          items:
+          - key: tls.key
+            path: pk
+          - key: tls.crt
+            path: cert
       - name: jenkins-storage
         persistentVolumeClaim:
           claimName: jenkins-pv-claim
@@ -201,11 +199,11 @@ spec:
 Finally, to expose your Jenkins deployment a service resource is required. The followig example demonstrates how to create a service for Jenkins on Kubernetes.
 
 ```yaml
-apiVersion: v1
+apiVers tkspk v1
 kind: Service
 metadata:
   name: jenkins
-  namespace: jenkins
+  namespace: cicd
 spec:
   selector:
     app: jenkins
