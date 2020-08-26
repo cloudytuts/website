@@ -1,6 +1,6 @@
 ---
-title: "How to Deploy Django in Kubernetes"
-date: 2020-08-24T21:19:59-04:00
+title: "How to Deploy Redis on Kubernetes"
+date: 2020-08-24T21:15:11-04:00
 draft: true
 # author:
 # tags:

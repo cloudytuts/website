@@ -1,6 +1,6 @@
 ---
-title: "How to Deploy Rails in Kubernetes"
-date: 2020-08-24T21:21:05-04:00
+title: "How to Deploy Elasticsearch on Kubernetes"
+date: 2020-08-24T21:12:50-04:00
 draft: true
 # author:
 # tags:
