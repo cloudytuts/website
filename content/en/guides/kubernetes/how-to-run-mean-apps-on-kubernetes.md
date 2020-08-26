@@ -1,5 +1,5 @@
 ---
-title: "How to deploy MEAN apps in Kubernetes"
+title: "How to deploy MEAN apps on Kubernetes"
 date: 2020-08-24T20:58:15-04:00
 draft: false
 author: serainville
@@ -382,18 +382,9 @@ In the examples above for Angular and Express we used ConfigMaps and Secrets to 
 
 When you store a file in a ConfigMap or a Secret Kubernetes can add the file to your Pods by creating a Volume Mount for it. 
 
-```json
-{
-    "dev": {
-        "ANGULAR_APP_BASE_URL": "development",
-    },
-    "qa": {
-        "ANGULAR_APP_BASE_URL": "development",
-    },
-    "prod": {
-        "ANGULAR_APP_BASE_URL": "development",
-    },
-}
+```shell
+API_KEY=abc123
+API_HOST=api.host.name
 ```
 ### Adding .ENV to ConfigMap
 

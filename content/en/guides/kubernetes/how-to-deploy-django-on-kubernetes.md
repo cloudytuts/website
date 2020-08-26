@@ -1,6 +1,6 @@
 ---
-title: "How to Deploy Jenkins in Kubernetes"
-date: 2020-08-24T21:16:54-04:00
+title: "How to Deploy Django on Kubernetes"
+date: 2020-08-24T21:19:59-04:00
 draft: true
 # author:
 # tags:

@@ -1,7 +1,7 @@
 ---
 kind: tutorials
 layout: tutorial
-title: Running Python Flask in Kubernetes
+title: Running Python Flask on Kubernetes
 series: Kubernetes in Action
 date: "2020-07-06"
 tags: 
