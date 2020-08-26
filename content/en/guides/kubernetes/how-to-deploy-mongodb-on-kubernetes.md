@@ -1,5 +1,5 @@
 ---
-title: "Deploying Mongodb on Kubernetes"
+title: "How to Deploy MongoDB on Kubernetes"
 date: 2020-08-23T08:53:41-04:00
 draft: false
 author: serainville
