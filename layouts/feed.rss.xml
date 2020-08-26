@@ -2,7 +2,7 @@
   <channel>
     <title>{{ site.Title }} – {{ .Title }}</title>
     <link>{{ .Permalink }}</link>
-    <description>The Kubernetes project blog</description>
+    <description>CloudyTuts</description>
     <generator>Hugo -- gohugo.io</generator>{{ with site.LanguageCode }}
     <language>{{.}}</language>{{end}}{{ with site.Author.email }}
     <managingEditor>{{.}}{{ with site.Author.name }} ({{.}}){{end}}</managingEditor>{{end}}{{ with site.Author.email }}
@@ -10,8 +10,8 @@
     <copyright>{{.}}</copyright>{{end}}{{ if not .Date.IsZero }}
     <lastBuildDate>{{ .Date.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</lastBuildDate>{{ end }}
     <image>
-      <url>https://raw.githubusercontent.com/kubernetes/kubernetes/master/logo/logo.png</url>
-      <title>Kubernetes.io</title>
+      <url>https://raw.githubusercontent.com/cloudytuts/cloudytuts-theme/blob/master/static/images/cloudytuts-social.jpg</url>
+      <title>CloudyTuts</title>
       <link>{{ .Permalink }}</link>
     </image>
     {{ with .OutputFormats.Get "RSS" }}
