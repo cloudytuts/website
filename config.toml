@@ -37,8 +37,12 @@ page = [ "HTML"]
 section = [ "HTML"]
 
 [params]
-  mainSections = ["blog","tutorials","guides","news"]
-
+mainSections = ["blog","tutorials","guides","news"]
+header = "News, Guides, and Tutorials for the Cloud"
+twitter = "cloudytuts"
+facebook = "cloudytuts"
+github = "cloudytuts" 
+logo = "https://www.cloudytuts.com/images/cloudytuts-social.jpg"
 
 [taxonomies]
   category = "categories"
