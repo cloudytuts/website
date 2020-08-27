@@ -1,5 +1,5 @@
 ---
-title: "How to Solve Wordpress Redirecto to Localhost 8080"
+title: "How to Solve Wordpress Redirects to Localhost 8080"
 date: 2020-08-27T13:49:27-04:00
 draft: false
 author: serainville
