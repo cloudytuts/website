@@ -1,5 +1,5 @@
 ---
-title: "How to Run WordPress and MySQL on Kubernetes"
+title: "How to Deploy WordPress and MySQL on Kubernetes"
 date: 2020-08-19T22:18:46-04:00
 draft: false
 author: serainville
@@ -24,6 +24,7 @@ Running WordPress in a stable, containerized environment requires much more than
 * Using CronJob to run scheduled tasks, such as backups.
 * Network policies to protect network services and pods
 * Persistent storage to persist state for the database and WordPress
+* Updating WordPress
 
 ## Getting Started
 ### Persistent Storage
@@ -437,6 +438,11 @@ The CronJob below runs an Ubuntu container. When the the container is executed i
 Our example CronJob uses a Ubuntu distribution image and performs a number of task to install dependencies. While this may not be an issue for a cronjob that runs daily or monthly, a purpose-built image could be created with all of the dependent packages already installed.
 {{< /note >}}
 
+Create a secret to hold your credential's file for Google Cloud.
+```shell
+kubectl create secret generic gcloud-creds --from-file credentials.json
+```
+
 Create a new file named `wordpress-mysql-backup.yaml` with the following contents.
 
 ```yaml
@@ -478,6 +484,14 @@ spec:
                 secretKeyRef:
                 - name: wordpress-mysql-secrets
                   key: db.name
+            volumeMounts:
+            - name: gcloud-creds
+              mountPath: "/tmp/credentials.json"
+          volumes:
+          - name: gcloud-creds
+            secret:
+              secretName: glcoud-creds
+              defaultMode: 0400
           restartPolicy: OnFailure
 ```
 
@@ -487,3 +501,60 @@ Create the `CronJob` by applying the manifest against your cluster.
 kubectl apply -f wordpress-mysql-backup.yaml
 ```
 
+## Updating WordPress
+Updating WordPress is done as you normally would. While your image tag version will fallout of sync, the WordPress installation files will persist. 
+
+Updating the WordPress image will not update your installation files. It will, however, update any installed packages and configurations. For example, it will update the PHP and Apache package, which is important for security reasons. 
+
+## Backup Content
+Any production website should be backed up on a regular schedule. While the contents are protected by hardware redundancy, if you're running on a cloud platform like AWS, Azure, Digital Ocean, the files are not protected from accidental deletion or corruption.
+
+Kubernetes' CronJobs can perform the task of scheduled backups. 
+* Create a new CronJob.
+* Store credentials for external storage bucket in a secret.
+* Run CronJob nightly.
+* Have the CronJob mount the WordPress persistent volume.
+* Archive (tar|zip) the WordPress files with a unix timestamp.
+
+{{< note >}}
+The following example uses Google Cloud. Your CronJob should match the environment your Kubernetes cluster is hosted.
+{{< /note >}}
+
+Create a secret to hold your credential's file for Google Cloud.
+```shell
+kubectl create secret generic gcloud-creds --from-file credentials.json
+```
+
+Create a manifest for the WordPress backup CronJob.
+
+```yaml
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: wordpress-file-backup
+spec:
+  schedule: "0 1 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: wordpress-backup
+            image: gcr.io/google.com/cloudsdktool/cloud-sdk:latest
+            imagePullPolicy: Always
+            args:
+              - gcloud auth activate-service-account --key-file /tmp/credentials.json
+              - tar czvf wordpress-$(date +%s).tar.gz /var/www/html
+              - gsutil cp wordpress-*.tar.gz gs:/my-bucket
+            volumeMounts:
+            - name: gcloud-creds
+              mountPath: "/tmp/credentials.json"
+          volumes:
+          - name: gcloud-creds
+            secret:
+              secretName: glcoud-creds
+              defaultMode: 0400
+          restartPolicy: OnFailure
+```
+
+When using a specific image tag for a container we typically set `imagePullPolicy` to not pull every time a Pod is created. However, with Google Cloud, we want to ensure we are always using the latest version of cloud-sdk. And since our CronJob only runs once nightly, setting `imagePullPolicy` to `Always` will not put any significant amount of stress on our nodes.
