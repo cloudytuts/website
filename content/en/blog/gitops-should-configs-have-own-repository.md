@@ -1,6 +1,7 @@
 ---
 title: "GitOps: Should Configs be Stored Separately from Application Code"
 date: 2020-08-15T21:24:51-04:00
+layout: post
 draft: false
 author: serainville
 tags:
