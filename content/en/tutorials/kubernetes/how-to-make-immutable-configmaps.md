@@ -1,7 +1,7 @@
 ---
 title: "How to Create Immutable Configmaps and Secrets"
 date: 2020-08-27T00:16:04-04:00
-draft: true
+draft: false
 author: serainville
 tags:
   - kubernetes
@@ -33,7 +33,7 @@ data:
 ```
 
 {{< note >}}
-By default, ConfigMaps and Secrets will not be immutable. The state was be explicitly set in order for it to be enabled.
+By default, ConfigMaps and Secrets will not be immutable. The state must be explicitly set in order for it to be enabled.
 {{< /note >}}
 
 ## Benefits
@@ -46,4 +46,4 @@ In basic terms, immutable data provides the following benefits:
 An additional benefit to using immutable resources is performance. Since it is not possible to modify Secrets or ConfigMaps marked as immutable, Kubernetes does not to watch for changes to these resources. This allows you to scale the number of ConfigMaps or Secrets to an enormous amount.
 
 ## Conclusion
-Kubernetes has introduced Immutable ConfigMaps and Secrets. The is advantagous to anyone who wants to protect data and configurations from unwanted changes, whether through accidental updates or bad actors targeting a cluster.
+Kubernetes has introduced Immutable ConfigMaps and Secrets. This is advantagous to anyone who wants to protect data and configurations from unwanted changes, whether through accidental updates or bad actors targeting a cluster. 
