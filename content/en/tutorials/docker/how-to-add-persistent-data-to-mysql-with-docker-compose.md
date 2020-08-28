@@ -9,7 +9,7 @@ tags:
   - docker-compose
 description: |
     Learn how to use volumes with Docker Compose to add persistent data for MySQL to your containerized database workloads.
-repos: https://github.com/cloudytuts/docker-in-action
+repo: https://github.com/cloudytuts/docker-in-action
 ---
 In this tutorial, you will learn how to create persistent volumes with Docker Compose and use them with MySQL. 
 
