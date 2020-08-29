@@ -11,3 +11,5 @@ CloudyTuts is an online community of season cloud engineers and those who aspire
 2. Enable the community to engage by submitting and updating content.
 3. Provide a way for the community to raise issues with content.
 
+## Get in Touch
+If you have any questions, tips, or recommendations be sure to [contact us]{{ relref "/contact.md" "Contact Us"}}.
