@@ -1,5 +1,5 @@
 ---
-title: "How to Check Memory Cpu Utilization of Container"
+title: "How to Check Memory and CPU Utilization of Docker Container"
 date: 2020-08-28T23:07:53-04:00
 draft: false
 author: serainville
