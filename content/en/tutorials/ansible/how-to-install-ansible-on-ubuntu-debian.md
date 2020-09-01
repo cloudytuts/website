@@ -10,7 +10,7 @@ tags:
     - ubuntu
     - debian
 description: |
-    Learn how to install Ansible on Ubuntu and Debian with Python Pip3
+    Learn how to install Ansible on Ubuntu and Debian with Python Pip3, as well as how to use requirements.txt files and virtualenv for Ansible.
 ---
 In this tutorial, you will learn how to install Ansible on Ubuntu and Debian. We will cover using the default distrubtion repositories, as well as Python Pip3, as well as expanding on different ideas on using these methods in Agile DevOps environments.
 
