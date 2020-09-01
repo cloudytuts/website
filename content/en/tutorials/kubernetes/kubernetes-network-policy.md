@@ -26,6 +26,13 @@ spec:
   - Egress
 ```
 
+### What is an ingress and egress policy
+Unless you have a networking background, you may not have learned about ingress and egress traffic. Ingress is any incoming traffic to your Kubernetes cluster, while egress is any outgoing traffic. 
+
+To control access to your services and pods, an ingress rule should be created to allow incoming traffic over a specific protocol and port. An egress rule should be set up to permit traffic leaving your server or pod to a IP address range, and over a specific protocol and port.
+
+For example, in this tutorial we want to apply an ingress rule to our MySQL pod that only accepts traffic from our WordPress pods over TCP port 3306. We also want to enforce a ingress rule to our WordPress pods that permits TCP port 80 and 443, as these are the only ports connections should be allowed.
+
 ### Ingress Policy Rules
 Within in the spec of a network policy manifest we define our ingress rules
 
