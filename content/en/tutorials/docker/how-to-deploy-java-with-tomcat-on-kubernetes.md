@@ -12,7 +12,7 @@ description: |
 ---
 
 
-In this tutorial, you will learn how to deploy your Java Webapps on Tomcat with Kubernetes. 
+In this tutorial, you will learn how to deploy your Java Webapps on Tomcat with Docker. 
 
 Apache provides a large list of Docker images for running Tomcat as a container. In fact, there likely more Tomcat images than most any project hosted on Docker Hub. The caveat is they all run OpenJDK. While OpenJDK has come along ways since its inception, there are still some differences between it and Java JDK.  
 
@@ -97,21 +97,33 @@ The first step is to create a keystore that will hold your certificate files sec
 The second step is configure Tomcat to use your keystore and to enable SSL\TLS. This second step is fairly messy and how you enable depends on a lot of factors.
 
 ### Creating a Keystore
+#### Step 1: Create the Keystore
+You will need Java installed on your local machine, whether it's the official JDK or OpenJDK. The following example creates a new keystore at the `./webapp.keystore` with an alias of `webapp`. You will be prompted to set a password for the keystore, and it is highly recommended that you do.
 ```shell
 $JAVA_HOME/bin/keytool -genkey -alias webapp -keyalg RSA ./webapp.keystore
 ```
+
+#### Step 2: Create a Certificate Signing Request (CSR)
+If you do not already have a certificate and key file, you will need to generate a CSR. This CSR should then be submitted to a certificate authority of your choice, who will then supply you with a certificate file and key file to be used by your web application.
 
 ```shell
 $JAVA_HOME/bin/keytool -certreq -keyalg RSA -alias [youralias] -file [yourcertificatname].csr -keystore ./webapp.keystore
 ```
 
+#### Step 3: Import the Certificate files
+Once you have obtained the files from your certificate authority, it is time to import them into your keystore. The first file you will import is the root certificate, which should have been provided to you.
+
 ```shell
 keytool -import -alias root -keystore ./webapp.keystore] -trustcacerts -file [path/to/the/root_certificate]
 ```
 
+Second, you will import your certificate to ythe keystore.
+
 ```shell
-keytool -import -alias [youralias] -keystore ./webapp.keystore -file [path/to/your_keystore]
+keytool -import -alias [youralias] -keystore ./webapp.keystore -file [path/to/certificate]
 ```
+
+You now have a keystore with the certificate that will be used to create secure TLS\SSL connections to your web app. Next you will have to enable SSL\TLS in Tomcat.
 
 ### Configuring Tomcat
 Enable TLS\SSL in Tomcat is pretty messy, as result of how Java implemented it. We're not going to cover this part in detail, since there are multiple ways of doing it depending on how you want to configure Tomcat.
@@ -124,7 +136,7 @@ To copy the `server.xml` from the image to your local filesystem, use the `docke
 docker exec -it tomcat:10-jdk14-openjdk-slim -- cp /usr/local/tomcat/conf/server.conf ./server.conf
 ```
 
-You should now have a local copy of the image's default `server.xml` file. Next, following instructions on how to configure the file to use your keystore, its password, and enable SSL\TLS. A guide starting guide is provided by [Mulesoft](https://www.mulesoft.com/tcat/tomcat-ssl)
+You should now have a local copy of the image's default `server.xml` file. Next, follow instructions on how to configure the `server.xml` file to use your keystore, its password, and enable SSL\TLS. A [great guide has bene published by Mulesoft](https://www.mulesoft.com/tcat/tomcat-ssl).
 
 ### Adding Keystore to Docker Image
 It doesn't matter where you place your keystore file, so long as Tomcat is able to access it. In our example below, we are placing the keystore in the root directory of our container. We are also copying our own custom `server.xml` file into the Docker image, since Tomcat needs to know where your keystore is located and its password.
