@@ -1,5 +1,5 @@
 ---
-title: "How to Immediately Start Cronjob Manually"
+title: "How to Immediately Start Kubernetes CronJobs Manually"
 date: 2020-09-02T17:19:42-04:00
 draft: false
 author: serainville
