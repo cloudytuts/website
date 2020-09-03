@@ -1,5 +1,6 @@
 ---
 title: Privacy Policy
+description: CloudyTuts privacy policy
 ---
 
 Your privacy is important to us. It is CloudyTuts' policy to respect your privacy regarding any information we may collect from you across our website, https://www.cloudytuts.com, and other sites we own and operate.
