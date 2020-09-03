@@ -1,5 +1,5 @@
 ---
-title: "How to Upgrade Postgres in Docker and Kubernetes"
+title: "How to Upgrade PostgreSQL in Docker and Kubernetes"
 date: 2020-08-25T22:24:34-04:00
 draft: false
 author: serainville
@@ -11,7 +11,7 @@ description: |
     Learn how to upgrade your Postgres servers running in Docker or Kubernetes in a safe and reliable way to ensure data integrity. 
 ---
 
-In this tutorial, you will learn how to safely upgrade your Postgres containers in order to run more recent versions of the database server. These instructions apply to moving between major release (11.x -> 12.x) and do not apply to minor or bug releases.  
+In this tutorial, you will learn how to safely upgrade your PostgreSQL server containers to more recent versions of the database server. These instructions apply to upgrading between major release (11.x -> 12.x) and do not apply to minor or bug releases. For minor and bug releases the base image can be upgraded without problems.
 
 Applications like Postgres were not designed to run in a containerized world, as conventions introduced with Docker did not exist when they were originally written.
 
@@ -20,15 +20,15 @@ Instead, we will have to follow old, trusted conventions to safely upgrade Postg
 ## 1. Deploy New Postgres Image
 The first step is to deploy a new Postgress container using the updated image version. This container MUST NOT mount the same volume from the older Postgress container. It will need to mount a new volume for the database.
 
-If you mount to previous volume used by the older Postgres server, the new Postgres server will fail. Postgres requires the data to be migrated before it can load it.
+If you mount to a previous volume used by the older Postgres server, the new Postgres server will fail. Postgres requires the data to be migrated before it can load it.
 
 ## 2. Backup Running Container
-You will need access to your Postgres container to execute the `pg_dumpall` command. To perform a one-time backup of all the databases, we are going to exec a command inside of the container and output a backupfile to our local machine.
+You will need access to your Postgres container to execute the `pg_dumpall` command. To perform a one-time backup of all the databases, we are going to exec a command inside of the container and output a backup file to our local machine.
 
 ### Docker
 If your Postgres server is running as a Docker container, you will execute the following command.
 ```shell
-docker exec -it [postgres-container] pg_dumpall > dumpfile
+docker exec -it [postgres-container] -- pg_dumpall > dumpfile
 ```
 ### Kubernetes
 If your Postgres server is running as a Kubernetes Pod, you will execute the following command.
