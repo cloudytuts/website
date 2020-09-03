@@ -2,6 +2,7 @@
 title: "About"
 date: 2020-08-15T23:17:38-04:00
 draft: false
+description: "CloudyTuts is an online community that publishes tutorials and Guides for cloud related topics"
 ---
 
 CloudyTuts is an online community of season cloud engineers and those who aspire to be a part of it.  We cover topics ranging from containerization with Docker and Kubernetes, to working with the hotest, most in demand cloud platforms.

@@ -2,6 +2,7 @@
 title: "Gitlab Security Release: 13.2.3, 13.1.6 and 13.0.12"
 date: "2020-08-06"
 author: serainville
+description: Gitlab announces security release for version 13.2.3, 13.1.6, and 13.0.12.
 tags:
     - gitlab
 ---
