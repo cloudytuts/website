@@ -23,31 +23,77 @@ The first step is to deploy a new Postgress container using the updated image ve
 If you mount to a previous volume used by the older Postgres server, the new Postgres server will fail. Postgres requires the data to be migrated before it can load it.
 
 ## 2. Backup Running Container
-You will need access to your Postgres container to execute the `pg_dumpall` command. To perform a one-time backup of all the databases, we are going to exec a command inside of the container and output a backup file to our local machine.
+### pg_dumpall
+The `pg_dumpall` utility is used for writing out **(dumping)** all of your PostgreSQL databases of a cluster. It accomplishes this by calling the `pg_dump` command for each database in a cluster, while also dumping global objects that are common to all databases, such as database roles and tablespaces.
+
+The official PostgreSQL Docker image come bundled with all of the standard utilities, such as `pg_dumpall`, and it is what we will use in this tutorial to perform a complete backup of our database server.
+
+In a typical PostgreSQL backup using the `pg_dumpall` command, you would use the `-f` flag to specify an output file. While, this can still be done with a containerized server the output file will be written inside of that container. An additional step would be required to copy it to your local filesystem.
+
+Alternatively, to dump the output directly to your local filesystem you can use `>` to write a local file of the dump. The examples below will use this method over using the `-f` flag to simplify the backup process.
 
 ### Docker
-If your Postgres server is running as a Docker container, you will execute the following command.
+If your Postgres server is running as a Docker container, you will need to execute the following command.
 ```shell
-docker exec -it [postgres-container] -- pg_dumpall > dumpfile
+docker exec -it [postgres-container] /usr/bin/pg_dumpall -U [username] > dumpfile
 ```
+For example, if you were dumping the entire database server from a container with the ID of `eddc550220ed` and a PostgreSQL user named `postgres`, you would run the following command.
+
+```shell
+docker exec -it eddc550220ed /usr/bin/pg_dumpall -U postgres > dumpfile
+```
+
 ### Kubernetes
 If your Postgres server is running as a Kubernetes Pod, you will execute the following command.
 ```shell
-kubectl exec -it [postgres-pod] -- pg_dumpall > dumpfile
+kubectl exec -it [postgres-pod] -- /usr/bin/pg_dumpall -U postgre > dumpfile
 ```
 
-## 3. Import Database into New Container
+### Kubernetes Port-Forward
+The Kubernetes example above executes a command inside of your PostgreSQL container, and then dumps the backup to your local filesystem using an unconventional method. A different approach that can be accomplished with Kubernetes is to `port-forward` your pod's exposed port onto your local system. 
+
+By `port-forwarding` your Postgres pod you can run native tools locally against your database server.
+
+```shell
+kubectl port-forward svc/postgres 5432 &
+```
+```shell
+Forwarding from 127.0.0.1:5432 -> 5432
+Forwarding from [::1]:5432 -> 5432
+```
+
+With your Postgres svc port-forwarded to your local machine, you can now point `psql` to port 5432 on your local host to perform operations.
+
+{{< note >}}
+Connections to port-forwarded PostgreSQL services will require a username and password, if set. Unlike executing commands within the PostgreSQL container, which does not require a username or password by default, even if one is set.
+{{< /note >}}
+
+The example command below connects to the Postgres service running on a Kubernetes cluster with user `postgres`. The `-W` causes `pg_dumpall` to prompt for a password, and the `-f` flag sets the output file of the backup.
+
+```shell
+pg_dumpall -h 127.0.0.1 -p 5432 -U postgres -W -f database.bkp
+```
+```shell
+Password: 
+Handling connection for 5432
+```
+
+If your connection was successful, a new dump file will be found on your local filesystem.
+
+
+## 3. Import PostgreSQL Dump into New Container
 With the new Postgres container running with a new volume mount for the data directory, you will use the `psql` command to import the database dump file. During the import process Postgres will migrate the databases to the latest system schema.
 
 ### Docker
 ```shell
-docker exec -it [new-postgres-container] -- psql < dumpfile 
+docker exec -it [new-postgres-container] psql < dumpfile 
 ```
 
 ### Kubernetes
 ```shell
 kubectl exec -it [new-postgres-pod] -- psql < dumpfile>
 ```
+
 
 ## 4. Verify Import
 Always verify the import completed successfully and without corruption. You may want to perform a vew tests against the data to ensure everything imported correctly before moving on.
@@ -57,3 +103,8 @@ Once you've verified that the new Postgres server is operating correctly and the
 
 If you are running Kubernetes or Docker Swarm, you will need to delete the deployment of the Postgres service. Otherwise, both orchestrators will reschedule an older version of your Postgres server.
 
+## Further Reading
+
+* [Official documentation](https://www.postgresql.org/docs/current/app-pg-dumpall.html) for `pg_dumpall`
+* [Official documentation](https://www.postgresql.org/docs/current/app-psql.html) for `psql`
+* [Official PostgreSQL Docker Hub](https://hub.docker.com/_/postgres) page.
