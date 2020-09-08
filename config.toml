@@ -45,6 +45,7 @@ github = "cloudytuts"
 logo = "https://www.cloudytuts.com/images/cloudytuts-social.jpg"
 
 [minify]
+  disableHTML = true
   disableJSON = true
   [minify.tdewolff]
     [minify.tdewolff.html]
