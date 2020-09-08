@@ -1,8 +1,9 @@
 name: Shane Rainville
 image: serainville.jpg
 role: DevOps Engineer / Cloud Specialist
-bio: |
-  Developer, pipeline builder, cloud engineer, and believer in DevSecOps 
+shortbio: |
+  Blogger, Developer, pipeline builder, cloud engineer, and DevSecOps specialist. I have been working in the cloud for over a decade and running containized workloads since 2012, with gigs at small startups to large financial enterprises.
+bio:
 social:
   twitter: shanerainville
   github: serainville
