@@ -44,6 +44,15 @@ facebook = "cloudytuts"
 github = "cloudytuts" 
 logo = "https://www.cloudytuts.com/images/cloudytuts-social.jpg"
 
+[minify]
+  disableHTML = true
+  disableJSON = true
+  disableJS = true
+  [minify.tdewolff]
+    [minify.tdewolff.html]
+      keepDocumentTags = true
+      keepQuotes = true
+
 [taxonomies]
   category = "categories"
   tag = "tags"
