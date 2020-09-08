@@ -232,3 +232,19 @@ spec:
               claimName: postgres-pv-claim         
 ```
 
+## Upgrading PostgreSQL on Kubernetes
+New versions of Postgres our released on a regular basis, from major releases to bug\security fixes. While our database service is running in a containerized world, swapping your image from an older release to a newer one will likely not work.
+
+### Major and Minor Upgrades
+When major new release of PostgreSQL is released databases on your current release must be upgraded to the latest schema. This is a hard requirement, and that makes it impossible to do in a containerized workload. 
+
+For major releases you will need to do the following:
+1. Create a separate deployment running a more recent container image of PostgreSQL.
+1. Dump your data from the currently running pod.
+1. Import your data dump into the newer PostgreSQL deployment.
+1. Tear down your old PostgreSQL deployment.
+
+For a more detailed workflow for upgrading PostgreSQL running in Kubernetes, read [How to upgrade PostgreSQL in Docker and Kubernetes]({{< relref "/tutorials/docker/upgrading-postgres-containers.md" >}} "Upgrading PostgreSQL Containers")
+
+### Bug fixes
+Bugfix and security patches do not have the same requirement as major and minor PostgreSQL releases. You can simply update your deployment to the latest bugfix version (X.X.1 -> X.X.2).
