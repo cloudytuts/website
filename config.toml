@@ -47,6 +47,7 @@ logo = "https://www.cloudytuts.com/images/cloudytuts-social.jpg"
 [minify]
   disableHTML = true
   disableJSON = true
+  disableJS = true
   [minify.tdewolff]
     [minify.tdewolff.html]
       keepDocumentTags = true
