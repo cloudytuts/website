@@ -13,7 +13,7 @@ description: |
     Learn how to delete Kubernetes resources by using a manifest file or by targeting the resource directly through the command-line.
 ---
 
-# What's Covered
+## What's Covered
 * Learn how to delete Kubernetes resources using manifest files.
 * Learn how to delete Kubernetes resources without manifest files.
 
