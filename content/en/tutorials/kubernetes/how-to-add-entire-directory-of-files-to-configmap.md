@@ -10,7 +10,7 @@ description: |
     Learn how to add an entire directory of files to your ConfigMap for mounting in a deployment or pod.
 ---
 
-In this tutorial, you will learn how to store an entire directory of files in ConfigMap, without adding them individually. 
+In this tutorial, you will learn how to store an entire directory of files in ConfigMap, and avoid having to add them all individually. The `kubectl create configmap` supports targeting an entire directory of files and storing each on as a data key within a new ConfigMap.
 
 Most use cases of ConfigMap are to store parameters for an application. On occasion, individual files are stored for mounting in a deployment or pod. These files are typically single config files, such as `my.conf` or `mongod.conf`.
 
@@ -53,7 +53,7 @@ metadata:
 We can see three keys, one for each file that was scanned. The files were `client.conf`, `routes.conf`, and `server.conf`. Each file's contents can also be seen.
 
 {{< warning >}}
-ConfigMap have a hard 1MB size limit. If the contents of your files exceeds 1MB you will not be able to store them in a single ConfigMap. A Persistent Volume may be a better solution.
+ConfigMaps have a hard 1MB size limit. If the contents of your files exceeds 1MB you will not be able to store them in a single ConfigMap. A Persistent Volume may be a better solution.
 {{< /warning >}}
 
 ## Conclusion
