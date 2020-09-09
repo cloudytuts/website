@@ -6,7 +6,7 @@ The following is a set of guidelines for contributing to CloudyTuts, hosted at c
 
 ## Before you get started
 ### Code of Conduct
-CloudyTuts follows a [Code of Conduct](https://github.com/cloudytuts/website/CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior to the [CloudyTuts Code of Conduct Committee]() [conduct@cloudytuts.com]().
+CloudyTuts follows a [Code of Conduct](https://github.com/cloudytuts/website/blob/master/CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior to the [CloudyTuts Code of Conduct Committee]() [conduct@cloudytuts.com]().
 
 ### Style Guides and Templates
 Before submitting a pull request to create new content, please review the [CloudyTuts style guide]() and follow the [instructions for using page templates]().
