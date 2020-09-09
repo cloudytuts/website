@@ -8,7 +8,7 @@ tags:
   - pod
   - container
 description: |
-    Learn how to copy files from your local machine into a running Pod container using the kubectl command.
+    Learn how to use the kubectl cp CLI command to copy files and directories from your local machine into a container of a running pod.
 ---
 
 In this tutorial, you will learn how to use the `kubectl` CLI to copy files and directories from your local machine into a running Pod container.
