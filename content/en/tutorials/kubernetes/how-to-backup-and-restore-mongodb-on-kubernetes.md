@@ -1,7 +1,7 @@
 ---
 title: "How to Backup and Restore MongoDB Deployment on Kubernetes"
 date: 2020-09-03T04:52:05-04:00
-draft: true
+draft: false
 author: serainville
 tags:
     - kubernetes
@@ -9,6 +9,8 @@ tags:
 description: |
     Learn how to backup and restore your MongoDB server running on Kubernetes and protect your data on a regular schedule.
 ---
+
+Protecting your data is essential no matter where or how it is stored. With Kubernetes is even more important, as the infrastructure is not designed for long-lived containers. In this tutorialm you will learn how to protect your MongoDB databases by backing them up and restoring to them.
 
 ## Manual Backup
 Backups of MongoDB are done using the `mongodump` command. While we could manually shell into your running MongoDB server's pod and perform a database dump with it, that's not the best approach. An automated task is the best solution to ensure your data is protected on a regular basis.
@@ -33,6 +35,30 @@ For targeting collections instead of an entire database, you use the `--collecti
 ```shell
 kubectl exec -it <mongodb-pod-name> -- mongodump --collection MYCOLLECTION --db DB_NAME --out ./mongodb/backup
 ```
+
+### Port-Forwarding MongoDB
+The solution above used the `docker exec` command to execute commands inside of the MongoDB pods. Another option is to use port-forwarding to link a local port with that of your MongoDB service. This provides far more benefits than running remote executions, as we can interact with the MongoDB server natively, from your client machine.
+
+{{< note >}}
+Port-forwarding to be done between your local machine and a pod, or between your local machine and a service. 
+{{< /note >}}
+
+```shell
+kubectl port-forward svc/mongodb 27027
+```
+
+With a local port now mapped to the MongoDB service running in your Kubernetes cluster, you can use the mongo client to perform administrative tasks remotely.
+
+```shell
+mongodump --collection MYCOLLECTION --db DB_NAME --out -u USERNAME -p ./mongodb-backup
+```
+
+{{< note >}}
+Remote `mongodump` command require user authentication.
+{{< /note >}}
+
+Notice how when using `mongodump` locally a username and password are required, unlike running the same command inside of the pod with the `kubectl exec` command. 
+
 
 ## CronJobs
 Kubernetes CronJobs are used to create regularily scheduled jobs to run on your cluster. Rather than manually backing up your MongoDB data yourself, a CronJob should be defined to automate the process for you.

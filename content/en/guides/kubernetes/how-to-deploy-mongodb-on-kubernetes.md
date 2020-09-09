@@ -298,6 +298,10 @@ kubectl apply -f mongodb-service.yaml
 ```
 
 ## Backing Up MongoDB
+It goes without saying that protecting your is one of the most important things you will need to do. There are several methods to backing up your MongoDB databases in Kubernetes, but this guide will focus on scheduling it as an automated process using Kubernetes CronJobs.
+
+To learn how to manually backup a MongoDB server running in Kubernetes, read our [How to backup and restore MongoDB on Kubernetes]({{< relref "/tutorials/kubernetes/how-to-backup-and-restore-mongodb-on-kubernetes.md" >}} "How to backup and restore MongoDB on Kubernetes").
+
 ### CronJob
 A CronJob is a scheduled, containerized job. 
 
@@ -403,4 +407,9 @@ When the interactive shell for the container created we can manage MongoDB using
 mongo -u $MONGO_INITDB_ROOT_USERNAME -p $MONGO_INITDB_ROOT_PASSWORD
 ```
 
+
+## Conclusion
+In this guide we covered how to deploy MongoDB on Kubernetes and manage it. You learned how to securely store credentials for your database, as well as how to expose it to other services running within your cluster.
+
+One of the more important topics is backups, which we covered as an automated process using CronJobs.
 
