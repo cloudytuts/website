@@ -419,7 +419,7 @@ volumes:
     name: angular-env
 ```
 
-Next a `volumeMount` must be added to the `container` that references to `volume`. The following example uses the `angular-env-file` above, mounts the volume as a file named `/app/.env`, and marks it as `readOnly` for security.
+Next, a `volumeMount` must be added to the `container` that references to `volume`. The following example uses the `angular-env-file` above, mounts the volume as a file named `/app/.env`, and marks it as `readOnly` for security.
 ```yaml
 volumeMounts:
 - name: angular-env-file
