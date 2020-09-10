@@ -1,5 +1,5 @@
 ---
-title: "How to Configure Angular, React, Node in Kubernetes"
+title: "How to Configure Node-based apps in Kubernetes"
 date: 2020-09-09T23:07:42-04:00
 draft: false
 author: serainville
