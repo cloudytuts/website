@@ -15,6 +15,8 @@ In this tutorial, you will learn how to update a Kubernetes deployment using mul
 In a production environment all Kubernetes resources should be created using a manifest file. 
 
 ## Updating Deployments
+There are two main method for updating deployments in Kubernetes. Depending on your use case you will either re-apply an existing manifest file (recommended) or you will edit the live state of a deployment. 
+
 ### Re-applying a Manifest
 To most recommended method for updating and resource in Kubernetes is to modify its manifest file and re-applying it. The reason for this is: (a) a versioned history is maintained of your resource, and (b) the current state is protected in the event your cluster encounters serious problems.
 
@@ -25,13 +27,62 @@ kubectl apply -f my-deployment.yaml
 ```
 
 ### Editing live state
-The second method for updating a deployment is to edit its live state. While this is an acceptable means of updating a resource in Kubernetes, it is discouraged as the state could be lost if a cluster experiences serious problems.
+The second method for updating a deployment is to edit its live state. While this is an acceptable means of updating a resource in Kubernetes, it is discouraged as the state could be lost and lives outside version control.
+
+One possibly reason why you would edit live is to troubleshoot an issue. Another example could be for experimentation, though even then a manifest file is still recommended.
 
 ```shell
 kubectl edit deployment my-app
 ```
 
-## Output Manifest File on Cluster
+When you `kubectl edit` a resource in Kubernetes the full state is downloaded as a temporary file, which is opened in your default text editor. The following is an example of what it would like when editing a deployment, with most of the file truncated easier reading.
+
+```yaml
+# Please edit the object below. Lines beginning with a '#' will be ignored,
+# and an empty file will abort the edit. If an error occurs while saving this file will be
+# reopened with the relevant failures.
+#
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"name":"postgres","namespace":"feedorus-dev"},"spec":{"replicas":1,"selector":{"matchLabels":{"app":"postgres"}},"template":{"metadata":{"labels":{"app":"postgres"}},"spec":{"containers":[{"envFrom":[{"secretRef":{"name":"postgres-secrets"}},{"configMapRef":{"name":"postgres-configmap"}}],"image":"postgres:12.4-alpine","name":"postgres","ports":[{"containerPort":5432}],"volumeMounts":[{"mountPath":"/var/lib/pgsql/data","name":"postgres-database-storage"}]}],"volumes":[{"name":"postgres-database-storage","persistentVolumeClaim":{"claimName":"postgres-pv-claim"}}]}}}}
+  creationTimestamp: "2020-09-08T03:35:00Z"
+  generation: 1
+  managedFields:
+  - apiVersion: apps/v1
+    fieldsType: FieldsV1
+    fieldsV1:
+...
+```
+
+Notice how the temporary file contains more fields than your original manifest file. These values should be left alone, as the only thing that should modified is what you would place in a regular manifest file.
+
+{{< warning >}}
+Changing fields managed by Kubernetes, such as `kubectl.kubernetes.io/last-applied-configuration` could have adverse affects. You should not modify any fields created and managed by the Kubernetes cluster.
+{{< /warning >}}
+
+When you save your changes and exit the text editor they are applied to the resource immediately. Kubernetes will validate the syntax, and if any errors are found it will reject the change, saving you from a possible outage. Instead, kubectl will reopen the temporary file and an explanation for the rejection will be displayed:
+
+```text
+# deployments.apps "postgres" was not valid:
+# * : Invalid value: "The edited file failed validation": [yaml: line 135: did not find expected key, invalid character 'a' looking for beginning of value]
+/```
+
+If you exit the text editor without making any changes, kubectl will delete the temporary file and nothing will be applied to the cluster.
+
+```shell
+Edit cancelled, no changes made.
+```
+
+If the changes are free of errors and applied to the cluster, the following message will be displayed as you are exited from the text editor.
+```shell
+deployment.apps/postgres edited
+```
+
+## Output Manifest File from Cluster
 In the event you do not have the original manifest file used to create a deployment, a new manifest file can be created by outputting the deployment to file using the `kubectl` command with the `-o` flag.
 
 ```shell
