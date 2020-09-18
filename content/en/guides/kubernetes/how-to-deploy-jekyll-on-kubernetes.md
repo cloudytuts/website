@@ -250,6 +250,54 @@ One way of determining if NGINX is healthy is checking an open port, typically p
 
 One downfall of a TCP check is it doesn't necessarily mean your application is running or accepting connection. It merely checks that the server is accepting connections. For example, an application may have a 503 error but the TCP port is open and listening, resulting in a false-positive healthy state.
 
-### Endpoint Checks
+1. Open your `deployment.yaml` into a text editor.
+1. Add the lines highlighted below to add a TCP `readinessProbe` and a TCP `livelinessProbe` probe.
+```yaml {hl_lines=["7-16"]}
+spec:
+  containers:
+  - name: website
+    image: jekyll-app:1.0.0
+    ports:
+    - containerPort: 80
+    readinessProbe:
+      tcpSocket:
+        port: 80
+      initialDelaySeconds: 5
+      periodSeconds: 10
+    livenessProbe:
+      tcpSocket:
+        port: 80
+      initialDelaySeconds: 15
+      periodSeconds: 20
+```
+1. Save your changes and reapply the deployment manifest.
+    ```shell
+    kubectl apply -f deployment.yaml
+    ```
+
+### HTTP Liveliness Probe
 An endpoint health check determines an applications health by hitting a predesignated URI. If the request to the URI returns a response, such as HTTP Status 2XX, the application and, therefore, container are deemed healhy.
 
+1. Open the `deployment.yaml` file into a text editor.
+1. In the deployment manifest, add the following `livenessProbe` section to your `container`.
+    ```yaml {hl_lines=["7-15"],linenostart=14}
+    spec:
+      containers:
+      - name: website
+        image: jekyll-app:1.0.0
+        ports:
+        - containerPort: 80
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          httpHeaders:
+          - name: Custom-Header
+            value: Awesome
+          initialDelaySeconds: 3
+          periodSeconds: 3
+    ```
+1. Save your changes to `deployment.yaml` and reapply the manifest.
+    ```shell
+    kubectl apply -f deployment.yaml
+    ```
