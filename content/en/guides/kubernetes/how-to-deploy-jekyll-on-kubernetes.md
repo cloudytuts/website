@@ -8,6 +8,7 @@ tags:
     - jekyll
     - python
     - docker
+repo: https://github.com/cloudytuts/kubernetes-in-action
 description: |
     Learn how to use Docker to containerize Jekyll static-content websites and deploy them on Kubernetes clusters.
 ---
