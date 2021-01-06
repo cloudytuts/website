@@ -8,6 +8,7 @@ tags:
   - wordpress
 description: |
     Learn how to deploy WordPress with multisite enabled on Kubernetes with persistent storage, secrets for senstivie values, and configMaps.
+repo: https://github.com/cloudytuts/kubernetes-in-action    
 ---
 
 In this tutorial you will learn how to deploy WordPress on Kubernetes with a multisite configuration. WordPress Multisite allows blog owners to host multiple sites from a single installation. This allows you manage all sites through a single pane of glass, minimizing your infrastructure spend and operational costs.
