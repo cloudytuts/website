@@ -189,7 +189,7 @@ spec:
 ### SecurityContext
 While Docker and Containerd apply some sane defaults to protect containerized workloads, OCI containers are still largely vulnerabily and place your host and other workloads at risk. Even more can be and should be done to harden your processes to protect against malicious users.
 
-Malicious users who find there way into your container via a flaw in your application will quickly realize they are in a container. Knowing this, they will attempt to ***escape*** the container in order to attack the host and all other containerized workloads. The key to container escapes is root privileges within the container and, unfortunately, the official WordPress images must run as root. While not good, it's not completely terrible. 
+Malicious users who find their way into your container via a flaw in your application will quickly realize they are in a container. Knowing this, they will attempt to ***escape*** the container in order to attack the host and all other containerized workloads. The key to container escapes is root privileges within the container and, unfortunately, the official WordPress images must run as root. While not good, it's not completely terrible. 
 
 One way to protect a container and mitigate risks of escapes is to remove all Kernel capabilities granted to the parent processes' UID (0, root), except those absolutely required to run our app.
 
