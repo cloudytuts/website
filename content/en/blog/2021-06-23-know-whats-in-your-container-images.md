@@ -3,7 +3,10 @@ title: "Know What's in Your Container Images"
 date: 2021-06-23T11:42:07-04:00
 draft: false
 author: serainville
-description: Container security and packages
+description: Do you know what's running in your containers? Audit your images to avoid packages that leave you vulnerable to exploitation
+tags:
+- containers
+- security
 ---
 
 How well do you know the base container images running your services and tooling? It's a question that is largely ignored, as we often place an enormous amount of trust in them. Yet, securing your workloads and underlying infrastructure requires that we answer the question 'What is running in my containers?'
