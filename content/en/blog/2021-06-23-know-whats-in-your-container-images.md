@@ -13,7 +13,7 @@ How well do you know the base container images running your services and tooling
 
 As developers we are largely satisfied that our application runs in an expected manner once we've containerized it. However, that leads to unknowingly including packages and services within the container runtime that opens us up to security exploitations. 
 
-## Cataloging Packages
+## Cataloging Container Packages
 Unless you are working with scratch base image, your container is likely filled with packages that are not crucial to the functionality of your app. Knowing what resides inside of your chosen base images will help you secure your workloads.
 
 A popular open-source tool for cataloging packages inside of images is [syft](https://github.com/anchore/syft), which scans images for any packages installed, including deb, NPM, Python, etc.
@@ -21,7 +21,11 @@ A popular open-source tool for cataloging packages inside of images is [syft](ht
 ### Using Syft Container Package Scanner
 The following shows the output of **syft** against an official WordPress image. It's a long list of packages, each bringing with them their own vulnerabilities. 
 
-```shell {hl_lines=[8,"15-17"]}
+```shell {hl_lines=["19-21","35-39"]}
+❯ syft wordpress:latest
+ ✔ Parsed image            
+ ✔ Cataloged packages      [223 packages]
+
 NAME                       VERSION                       TYPE 
 adduser                    3.118                         deb   
 apache2                    2.4.38-3+deb10u4              deb   
@@ -248,11 +252,21 @@ xz-utils                   5.2.4-1                       deb
 zlib1g                     1:1.2.11.dfsg-1               deb  
 ```
 
-You should audit every package installed in any image that will be expected to run in production.
+You should audit every package installed in any image that will be expected to run in production. The output above really only lists packages installed in the final layer of your images, though there could be many more hidden in other layers.
+
+Using the `--scope` flag of Syft we can show any additional packages hidden within.
+
+```shell
+❯ syft wordpress:latest --scope all-layers
+ ✔ Parsed image            
+ ✔ Cataloged packages      [1175 packages]
+```
 
 
-### Development Packages
-The following packages may seem innocent enough, however, they provide tooling an attack could use for exploitation. As the expected use case of a WordPress image is to run an WordPress site, it's unlikely you will ever need to compile C or C++ code, which is exactly what the tools permit an attacker to do. 
+### Security Implications of not Auditing Packages
+The catalog above shows 223 packages installed in the latest WordPress Docker image (as of June 24th, 2021). While many of them are likely necessary for running a PHP application using Apache Web Server, not all are required for every use case. 
+
+Take the following eight packages from the list into consideration. They are development tools used for compiling code written in C or C++, and in the case of a PHP or Apache, sometime needed when installing native extensions for expanded functionality. 
 
 ```shell
 cpp                        4:8.3.0-1                     deb   
@@ -265,17 +279,45 @@ gcc-8-base                 8.3.0-6                       deb
 make                       4.2.1-1.2                     deb 
 ```
 
-By giving an attacker development tooling, they are able to compile tools or software on your host, allowing for further exploitation.
+The inclusion of such tools in your final images provides a gateway for more serious attacks. One such example of an attack is known as the [DirtyCow](https://www.cs.toronto.edu/~arnold/427/18s/427_18S/indepth/dirty-cow/index.html), which was a Linux kernel privilege escalation vulnerability found in all versions of the Linux kernel. 
+
+The vulnerability could easily be exploited by writing a simple C source file, and then compiling that code locally for use ([POC source files](https://github.com/dirtycow/dirtycow.github.io/wiki/PoCs)).
 
 ### CURL
-Another interesting find is the curl package. While it may serve a purpose for WordPress to fetch plugins and updates, it also permits attackers to download file and tools for further exploiting the container.
+Another interesting find is the curl package. A very common program found on most Linux installations and container images. 
+
+```text
+curl                       7.64.0-4+deb10u2              deb
+```
+
+The tool provides a means for downloading files from remote sources. It fairly common and seemingly inconsequential addition to any system. 
+
+However, it's a tool often used by malious actors to further an attack, by downloading additional files and tooling into your container. 
 
 ## Mitigating Attacks
-Once an image's packages have been audited appopriate actions should be taken to mitigate any risks associated with them.
+The most important step for mitigating any potential attacks is understanding what attack vectors are available. We've identified two in the section above.
 
-As an example, while curl may serve a legitimate purpose on a WordPress host, it provides additional capabilities to an attacker to further exploit the container. 
+We now need to understand what our next steps should be, in an effort to mitigate any of those attacks.
 
-If curl cannot be removed, mitigate any risks associated with it using firewall rules and/or network policies. Block all egress traffic and then permit on only trusted addresses.
+1. Is the package needed for functionality?
+2. How do I safely remove it?
+
+
+### Remove Packages
+Removing packages from base images is not as not a simple task. The reason for this is the result of the underlying structure of an container image. 
+
+A single image is made of one or more filesystem layers, each one created by a command in your Dockerfile. Removing an item from the top layer does not remove it from the image. It will continue to exist in the layer it was originally added.
+
+Two possible solution for addressing this issue are to:
+1. Use multi-stage builds and copy required files from one stage to another.
+2. Deleting the file in your Dockerfile and then using the `--squash` flag during the build.
+
+### Handling Required Packages
+While it would be nice to remove any package that provides a mechanism for attackers to exploit your systems, it's not always possible to do.
+
+For the build tools (`cpp, g++, make`) an AppArmor profile can be employed to restrict file access.
+
+For packages like `curl`, a network policy or firewall can be used to restrict which addresses can be called.
 
 ## Conclusion
 We often take our base images for granted so long as our applications run. This often leaves us vulnerable to attacks that could have been easily avoided, had we audited the image and mitigated any potential attacks.
