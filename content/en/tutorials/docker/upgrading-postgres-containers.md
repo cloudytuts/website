@@ -91,12 +91,12 @@ docker exec -it [new-postgres-container] psql < dumpfile
 
 ### Kubernetes
 ```shell
-kubectl exec -it [new-postgres-pod] -- psql < dumpfile>
+kubectl exec -it [new-postgres-pod] -- psql < dumpfile
 ```
 
 
 ## 4. Verify Import
-Always verify the import completed successfully and without corruption. You may want to perform a vew tests against the data to ensure everything imported correctly before moving on.
+Always verify the import completed successfully and without corruption. You may want to perform a few tests against the data to ensure everything imported correctly before moving on.
 
 ## 5. Stop Old Container
 Once you've verified that the new Postgres server is operating correctly and the imported backup is fine, you will need to stop the container or Pod of the old Postgres server. 
