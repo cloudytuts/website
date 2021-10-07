@@ -2,8 +2,9 @@
 title: "How to Effectively use Kubernetes Quality of Service"
 date: 2021-10-06T16:51:23-04:00
 draft: false
- author: serainville
- tags: kubernetes
+author: serainville
+tags: 
+  - kubernetes
 description: |
     Learn how to leverage Kubernete's Quality Of Service profiles to better control pod evications and resource utilization.
 ---
@@ -101,8 +102,9 @@ spec:
     image: nginx
 ```
 
+## Conclusion
+Kubernetes new Quality of Service features grants operators and application owners better control over service quality and pod evication. 
 
-
-
+By applying an effective strategy with QoS profiles you can quarantee resources for your highest priority pods, while providing best effort for those that are not as sensitive to evictions or resource contention.
 
 
