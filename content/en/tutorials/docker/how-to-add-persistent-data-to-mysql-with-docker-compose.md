@@ -32,7 +32,7 @@ The `source` value is the path on the Docker host that will be mounted in the co
 The following is an example of mounting a volume in a MySQL Docker container. It mounts the relative path of `./mysql-data` from the host to the path `/var/lib/mysql` in the container.
 
 ```shell
-docker run -p -d 3306:3306 -v ./mysql-data:/var/lib/mysql mysql:latest
+docker run -d -p 3306:3306 -v ./mysql-data:/var/lib/mysql mysql:latest
 ```
 
 
