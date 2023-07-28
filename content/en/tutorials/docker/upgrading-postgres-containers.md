@@ -17,12 +17,7 @@ Applications like Postgres were not designed to run in a containerized world, as
 
 Instead, we will have to follow old, trusted conventions to safely upgrade Postgres in Docker or Kubernetes. You will need to dump your databases from the image running the older Postgres version, and then import the dump into the container running a new version of Postgres.
 
-## 1. Deploy New Postgres Image
-The first step is to deploy a new Postgress container using the updated image version. This container MUST NOT mount the same volume from the older Postgress container. It will need to mount a new volume for the database.
-
-If you mount to a previous volume used by the older Postgres server, the new Postgres server will fail. Postgres requires the data to be migrated before it can load it.
-
-## 2. Backup Running Container
+## 1. Backup Running Container
 ### pg_dumpall
 The `pg_dumpall` utility is used for writing out **(dumping)** all of your PostgreSQL databases of a cluster. It accomplishes this by calling the `pg_dump` command for each database in a cluster, while also dumping global objects that are common to all databases, such as database roles and tablespaces.
 
@@ -81,17 +76,22 @@ Handling connection for 5432
 If your connection was successful, a new dump file will be found on your local filesystem.
 
 
+## 2. Deploy New Postgres Image
+The second step is to deploy a new Postgress container using the updated image version. This container MUST NOT mount the same volume from the older Postgress container. It will need to mount a new volume for the database.
+
+If you mount to a previous volume used by the older Postgres server, the new Postgres server will fail. Postgres requires the data to be migrated before it can load it.
+
 ## 3. Import PostgreSQL Dump into New Container
 With the new Postgres container running with a new volume mount for the data directory, you will use the `psql` command to import the database dump file. During the import process Postgres will migrate the databases to the latest system schema.
 
 ### Docker
 ```shell
-docker exec -it [new-postgres-container] psql < dumpfile 
+docker exec -it [new-postgres-container] psql -U [username] < dumpfile 
 ```
 
 ### Kubernetes
 ```shell
-kubectl exec -it [new-postgres-pod] -- psql < dumpfile
+kubectl exec -it [new-postgres-pod] -- psql -U [username] < dumpfile
 ```
 
 
