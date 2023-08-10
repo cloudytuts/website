@@ -24,11 +24,11 @@ Run the `docker stats` command to display the status of your containers.
 docker stats
 ```
 ```shell
-CONTAINER ID        NAME                                                                                       CPU %               MEM USAGE / LIMIT     MEM %               NET I/O             BLOCK I/O           PIDS
-e51898f31223        lucid-lemon      0.00%               8.824MiB / 1.944GiB   0.44%               0B / 0B             0B / 0B             7
-bc97fe8bcd66        funky-monkey    0.01%               12.05MiB / 1.944GiB   0.61%               0B / 0B             0B / 0B             6
-17714162a329        hairy-lemon   0.15%               82.09MiB / 1.944GiB   4.12%               0B / 0B             0B / 0B             28
-340bec496cf7        silly-sunshine        0.50%               20.28MiB / 1.944GiB   1.02%               0B / 0B             0B / 0B             32
+CONTAINER ID        NAME                 CPU %               MEM USAGE / LIMIT     MEM %               NET I/O             BLOCK I/O           PIDS
+e51898f31223        lucid-lemon          0.00%               8.824MiB / 1.944GiB   0.44%               0B / 0B             0B / 0B             7
+bc97fe8bcd66        funky-monkey         0.01%               12.05MiB / 1.944GiB   0.61%               0B / 0B             0B / 0B             6
+17714162a329        hairy-lemon          0.15%               82.09MiB / 1.944GiB   4.12%               0B / 0B             0B / 0B             28
+340bec496cf7        silly-sunshine       0.50%               20.28MiB / 1.944GiB   1.02%               0B / 0B             0B / 0B             32
 ```
 
 * Memory is listed under the **MEM USAGE / LIMIT** column. This provides a snapshot of how much memory the container is utilizing and what it's memory limit is.
