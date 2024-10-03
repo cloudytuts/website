@@ -86,12 +86,12 @@ With the new Postgres container running with a new volume mount for the data dir
 
 ### Docker
 ```shell
-docker exec -it [new-postgres-container] psql -U [username] < dumpfile 
+docker exec -i [new-postgres-container] psql -U [username] < dumpfile 
 ```
 
 ### Kubernetes
 ```shell
-kubectl exec -it [new-postgres-pod] -- psql -U [username] < dumpfile
+kubectl exec -i [new-postgres-pod] -- psql -U [username] < dumpfile
 ```
 
 
