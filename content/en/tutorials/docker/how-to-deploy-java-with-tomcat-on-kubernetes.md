@@ -130,14 +130,10 @@ Enable TLS\SSL in Tomcat is pretty messy, as result of how Java implemented it. 
 
 The first step is to create a custom `server.xml` file, which will be used to point to your keystore and enable SSL\TLS. A good starting point is to copy the `server.xml` file from the official Tomcat image.
 
-To copy the `server.xml` from the image to your local filesystem, use the `docker run` command to start a new tomcat container, and then use `docker exec` to copy the `server.xml` file onto your local filesystem.
+To copy the `server.xml` from the image to your local filesystem, use the following command.
 
 ```shell
-docker run tomcat:10-jdk14-openjdk-slim
-```
-
-```shell
-docker exec -it tomcat:10-jdk14-openjdk-slim -- cp /usr/local/tomcat/conf/server.xml ./server.xml
+docker run tomcat:10-jdk14-openjdk-slim  cat /usr/local/tomcat/conf/server.xml > ./server.xml
 ```
 
 The `server.xml` file will look like the following. 
